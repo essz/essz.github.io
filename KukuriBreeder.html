@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style type="text/css">
+@import url('style.css');
+</style>
+<title>Kukuri breeder</title>
+</head>
+
+<body>
+
+<form name="breeder">
+
+<div id="main">
+
+<div id="header">
+    <h1>Kukuri Breeder</h1>
+</div>
+
+<div class="section">
+
+    <p>Dove</p>
+
+    <label for="dovegeno">
+        <h4>Geno</h4>
+    </label>
+    
+    <input type="text" id="mumgeno" size="40" class="fullwidth" placeholder="Enter dove's genotype" value="Aa/Ee/PaPa"><br><br>
+    <!--textarea rows="2" cols="39" id="mumcheck" class="fullwidth echo" spellcheck="false">Aa</textarea-->
+
+    <div class="line">
+
+    	<div class="optionItem">
+			<label for="mumBreed"><h4>Breed</h4></label>
+			<select id="mumBreed" onchange="toggleMumFeathertypeVisibility(this)">
+				<option>Common</option>
+				<option>Prairie</option>
+			</select>
+		</div>
+
+        <div class="optionItem">
+			<label for="mumRank"><h4>Rank</h4></label>
+			<select id="mumRank" name="mumRank">
+			</select>
+		</div>
+
+    </div>
+
+    <div class="line">
+
+        <div class="optionItem">
+			<label for="mumEars"><h4>Ears</h4></label>
+			<select id="mumEars" name="mumEars">
+			</select>
+		</div>
+
+        <div class="optionItem">
+			<label for="mumHorns"><h4>Horns</h4></label>
+			<select id="mumHorns" name="mumHorns">
+			</select>
+		</div>
+
+    </div>
+    
+    <div class="line">
+
+        <div class="optionItem">
+            <label for="mumRuffle"><h4>Ruffle</h4></label>
+            <select id="mumRuffle" name="mumRuffle">
+            </select>
+        </div>
+
+        <div class="optionItem">
+			<label for="mumTail"><h4>Tail</h4></label>
+			<select id="mumTail" name="mumTail">
+			</select>
+		</div>
+
+        <div id ="mumFeathertypeDiv" class="optionItem">
+            <label for="mumFeathertype"><h4>Feathertype</h4></label>
+            <select id="mumFeathertype" name="mumFeathertype">
+            </select>
+        </div>
+    </div>
+
+</div>
+
+<div class="section">
+
+<p>Rook</p>
+
+  <label for="rookgeno">
+        <h4>Geno</h4>
+    </label>
+    
+    <input type="text" id="dadgeno" size="40" class="fullwidth" placeholder="Enter rook's genotype" value="aa/ee/nPa"><br><br>
+    <!--textarea rows="2" cols="39" id="dadCheck" class="fullwidth echo" spellcheck="false">aa</textarea-->
+
+    <div class="line">
+
+        <div class="optionItem">
+            <label for="dadBreed"><h4>Breed</h4></label>
+            <select id="dadBreed" onchange="toggleDadFeathertypeVisibility(this)">
+                <option>Common</option>
+                <option>Prairie</option>
+            </select>
+        </div>
+
+        <div class="optionItem"> 
+            <label for="dadRank"><h4>Rank</h4></label>
+                <select id="dadRank">
+                </select>
+        </div>
+
+    </div>
+
+    <div class="line">
+
+        <div class="optionItem">
+            <label for="dadEars"><h4>Ears</h4></label>
+            <select id="dadEars" name="dadEars">
+            </select>
+        </div>
+
+        <div class="optionItem">
+            <label for="dadHorns"><h4>Horns</h4></label>
+            <select id="dadHorns" name="dadHorns">
+            </select>
+        </div>
+
+    </div>
+    
+    <div class="line">
+
+        <div class="optionItem">
+            <label for="dadRuffle"><h4>Ruffle</h4></label>
+            <select id="dadRuffle" name="dadRuffle">
+            </select>
+        </div>
+
+        <div class="optionItem">
+            <label for="dadTail"><h4>Tail</h4></label>
+            <select id="dadTail" name="dadTail">
+            </select>
+        </div>
+
+        <div id ="dadFeathertypeDiv" class="optionItem">
+            <label for="dadFeathertype"><h4>Feathertype</h4></label>
+            <select id="dadFeathertype" name="dadFeathertype">
+            </select>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="section">
+
+<button type="button" onclick='document.getElementById("babyName").innerHTML = breed()'>Roll!</button>
+
+<p>Nest</p>
+
+        <h4 id="babyName">Bebe</h4>
+        <h4 id="rollResult">Roll Result</h4>
+
+</div>
+
+</form>
+
+</div>
+
+<script>
+
+    function toggleMumFeathertypeVisibility(breed)
+    {
+        console.log("MUM FEATHER TYPE VISIBILITYY");
+
+        if(breed == 1) // Prairie
+        {
+            document.getElementById("mumFeathertypeDiv").style.display = "visible";
+        }
+        else
+        {
+             document.getElementById("mumFeathertypeDiv").style.display = "hidden";
+        }
+    }
+
+    function toggleDadFeathertypeVisibility(breed)
+    {
+        console.log("DAD FEATHER TYPE VISIBILITYY");
+
+        if(breed == 1) // Prairie
+        {
+            document.getElementById("dadFeathertypeDiv").style.display = "visible";
+        }
+        else
+        {
+             document.getElementById("dadFeathertypeDiv").style.display = "hidden";
+        }
+    }
+
+    function Rule(parent1gene, parent2gene, rolls)
+    {
+        this.parent1gene = parent1gene;
+        this.parent2gene = parent2gene;
+        this.rolls = rolls;
+    }
+    
+    var ranks = ["None", "Known", "Zeta+", "Arisen"];
+    var breeds = ["Common", "Prairie"];
+    var featherTypes = [
+        ["Regular", "Common"],
+        ["Dynasty", "Uncommon"],
+        ["Emperor", "Rare"],
+        ["Petal", "Rare"]
+    ]
+
+    /////// AA RULES /////////
+    var AaRules = 
+    [
+        ["aa", "aa", //Always passes aa
+            [
+                [1, 100, "aa"]
+            ]   
+        ],
+        ["Aa", "aa", //1-40 pass Aa, 41-100 pass aa
+            [
+                [1, 40, "Aa"],
+                [41, 100, "aa"]
+            ]   
+        ],
+        ["Aa", "Aa", //Aa x Aa = 1-10 pass AA, 11-60 pass Aa, 61-100 pass aa
+            [
+                [1, 10, "AA"],
+                [11, 60, "Aa"],
+                [61, 100, "aa"]
+            ]
+        ],
+        ["Aa", "aa", //AA x aa = 1-5 pass AA, 6-50 pass Aa, 51-100 pass aa
+            [
+                [1, 5, "AA"],
+                [6, 50, "Aa"],
+                [51, 100, "aa"]
+            ]
+        ],
+        ["AA", "Aa", //AA x Aa = 1-20 pass AA, 21-90 pass Aa, 91-100 pass aa
+            [
+                [1, 20, "AA"],
+                [21, 90, "Aa"],
+                [91, 100, "aa"]
+            ]
+        ],
+        ["AA", "AA", //1-50 pass AA, 61-100 pass Aa // fixed to 51 -ES
+            [
+                [1, 50, "AA"],
+                [51, 100, "Aa"]
+            ]
+        ]
+    ];
+
+    /////// EE RULES /////////
+    var EeRules = 
+    [
+        ["ee", "ee", //Always passes ee
+            [
+                [1, 100, "ee"]
+            ]   
+        ],
+        ["Ee", "ee", //1-40 pass Ee, 41-100 pass ee
+            [
+                [1, 40, "Ee"],
+                [41, 100, "ee"]
+            ]   
+        ],
+        ["Ee", "Ee", //Ee x Ee = 1-10 pass EE, 11-60 pass Ee, 61-100 pass ee
+            [
+                [1, 10, "EE"],
+                [11, 60, "Ee"],
+                [61, 100, "ee"]
+            ]
+        ],
+        ["Ee", "ee", //EE x ee = 1-5 pass EE, 6-50 pass Ee, 51-100 pass ee
+            [
+                [1, 5, "EE"],
+                [6, 50, "Ee"],
+                [51, 100, "ee"]
+            ]
+        ],
+        ["EE", "Ee", //EE x Ee = 1-20 pass EE, 21-90 pass Ee, 91-100 pass ee
+            [
+                [1, 20, "EE"],
+                [21, 90, "Ee"],
+                [91, 100, "ee"]
+            ]
+        ],
+        ["EE", "EE", //1-50 pass EE, 61-100 pass Ee // fixed to 51 -ES
+            [
+                [1, 50, "EE"],
+                [51, 100, "Ee"]
+            ]
+        ]
+    ];
+
+   /////// OO RULES ////////
+
+    var OoRules =  [
+
+        ["oo", "oo", //Always passes oo
+            [
+                [1, 100, "ooaa"]
+            ]   
+        ],
+        ["Oo", "oo", //Oo x oo = 1-15 pass Oo
+            [
+                [1, 15, "Oo"],
+                [16, 100, "nopass"]
+            ]   
+        ],
+        ["Oo", "Oo", //Oo x Oo = 1-2 pass OO, 3-25 pass Oo, 26-100 pass oo
+            [
+                [1, 2, "OO"],
+                [3, 25, "Oo"],
+                [26, 100, "oo"]
+            ]   
+        ],
+        ["OO", "oo", //OO x oo = 1 pass OO, 2-20 pass Oo, 21-100 pass oo
+            [
+                [1, 1, "OO"],
+                [2, 20, "Oo"],
+                [21, 100, "oo"]
+            ]   
+        ],
+        ["OO", "Oo", //OO x Oo = 1-5 pass OO, 6-40 pass Oo, 41-100 pass oo
+            [
+                [1, 5, "OO"],
+                [6, 40, "Oo"],
+                [21, 100, "oo"]
+            ]   
+        ]
+    ];
+
+    /////// XX OO RULES ////////
+
+    var XxOoRules =  [
+
+        ["Xx", "Oo", //Xx x Oo = 1-50 Xx, 51-100 Oo
+            [
+                [1, 50, "Xx"],
+                [51, 100, "Oo"]
+            ]   
+        ],
+        ["XX", "Oo", //XX x Oo = 1 dom XX, 2-75 Xx, 76-100 Oo
+            [
+                [1, 1, "XX"],
+                [2, 75, "Xx"],
+                [76, 100, "Xx"]
+            ]   
+        ],
+        ["XX", "OO", //XX x OO = 1-10 dom XX, 11-50 Xx, 51-90 Oo, 91-100 dom OO
+            [
+                [1, 10, "XX"],
+                [11, 50, "Oo"],
+                [91, 100, "OO"]
+            ]   
+        ]
+    ];
+
+    /////// MARKINGS ////////
+
+    // Rarities: 0 = Common, 1 = Uncommon, 2 = Rare
+
+    var markings = [ 
+        ["Blanket", "Blbl", "nBl", 0],
+        ["Bubble", "BuBu", "nBU", 0],
+        ["Collar", "CoCo", "nCo", 0],
+        ["Dalmatian", "DaDa", "nDa", 0],
+        ["Dun", "DD", "nD", 0],
+        ["Flank", "FlFl", "nFl", 0],
+        ["Gradient", "GrGr", "nGr", 0],
+        ["Haze", "HzHz", "nHz", 0],
+        ["Hood", "HH", "nH", 0],
+        ["Pangare", "PgPg", "nPg", 0],
+        ["Ringed", "RiRi", "nRi", 0],
+        ["Sable", "SbSb", "nSb", 0],
+        ["Shadow", "SwSw", "nSw", 0],
+        ["Skunk", "SkSk", "nSk", 0],
+        ["Smoke", "SmSm", "nSm", 0],
+        ["Socks", "SoSo", "NSo", 0],
+        ["Tailwind", "TwTw", "nTw", 0],
+        ["Underbelly", "UU", "nU", 0],
+        ["Viper", "VrVr", "nVr", 0],
+
+        ["Candied", "CnCn", "nCn", 1],
+        ["Laced", "LcLc", "nLc", 1],
+        ["Magma", "MgMg", "nMg", 1],
+        ["Marbled", "MbMb", "nMb", 1],
+        ["Okapi", "OkOk", "nOk", 1],
+        ["Painted", "PP", "nP", 1],
+        ["Panda", "PaPa", "nPa", 1],
+        ["Patched", "PaT", "nPaT", 1],
+        ["Piebald", "PldPld", "nPld", 1],
+        ["Ribs", "RbRb", "nRb", 1],
+        ["Ripple", "RpRp", "nRp", 1],
+        ["Rosette", "RoRo", "nRo", 1],
+        ["Siamese", "SiSi", "nSi", 1],
+        ["Snowflake", "SfSf", "nSf", 1],
+        ["Striped", "StSt", "nSt", 1],
+        ["Wax", "WxWx", "nWx", 1],
+
+        ["Calico", "CaCa", "nCa", 2],
+        ["Clown", "ClCl", "nCl", 2],
+        ["Crested", "CrCr", "nCr", 2],
+        ["Eidos", "EdEd", "nEd", 2],
+        ["Heart", "HrHr", "nHr", 2],
+        ["Inked", "InkInk", "nInk", 2],
+        ["Iridescent", "IrIr", "nIr", 2],
+        ["Koi", "KK", "nK", 2],
+        ["Luminescent", "LuLu", "nLu", 2],
+        ["Rune", "RnRn", "nRn", 2],
+        ["Luminescent", "LuLu", "nLu", 2],
+        ["Spotted", "SpSp", "nSp", 2],
+        ["Wisp", "WiWi", "nWi", 2]
+    ]
+
+    /////// TAILS AND RUFFLES RULES ////////
+
+    var tails = [
+        ["None", "None"], // Visualize as Regular in dropdowns
+        ["Fuzz", "Common"], 
+        ["Silken", "Uncommon"],
+        ["Short", "Rare"]
+    ]
+
+    var ruffles = [
+        ["None", "None"],
+        ["Muffed", "Common"], 
+        ["Curly", "Uncommon"],
+        ["Satin", "Rare"]
+    ]
+
+    var tailsRufflesRules =  [
+
+        ["None", "None", //None x None = 1-100 None
+            [
+                [1, 100, "None"]
+            ]   
+        ],
+        ["None", "Common", //None x C =  1-60 none, 61-90 common, 91-100 uncommon
+            [
+                [1, 60, "None"],
+                [61, 90, "Common"],
+                [91, 100, "Uncommon"]
+            ]   
+        ],
+        ["None", "Uncommon", //None x UC = 1-70 none, 71-80 common, 81-99 uncommon, 100 rare
+            [
+                [1, 70, "None"],
+                [71, 80, "Common"],
+                [81, 99, "Uncommon"],
+                [100, 100, "Rare"]
+            ]   
+        ],
+        ["None", "Rare", //None x R = 1-90 none, 91-95 uncommon, 96-100 rare
+            [
+                [1, 90, "None"],
+                [91, 95, "Uncommon"],
+                [96, 100, "Rare"]
+            ]   
+        ],
+        ["Common", "Uncommon", //C x UC = 1-40 none, 41-80 common, 81-99 uncommon, 100 rare
+            [
+                [1, 40, "None"],
+                [41, 80, "Common"],
+                [81, 99, "Uncommon"],
+                [100, 100, "Rare"]
+            ]   
+        ],
+        ["Common", "Rare", //C x R = 1-50 none, 51-70 common, 71-90 uncommon, 91-100 rare
+            [
+                [1, 50, "None"],
+                [51, 70, "Common"],
+                [71, 90, "Uncommon"],
+                [91, 100, "Rare"]
+            ]   
+        ],
+        ["Uncommon", "Rare", //UC x R = 1-60 none, 61-75 common, 76-85 uncommon, 86-100 rare
+            [
+                [1, 60, "None"],
+                [61, 75, "Common"],
+                [76, 85, "Uncommon"],
+                [86, 100, "Rare"]
+            ]   
+        ],
+        ["Common", "Common", //C x C = 1-20 none, 21-85 common, 86-100 uncommon
+            [
+                [1, 20, "None"],
+                [21, 85, "Common"],
+                [86, 100, "Uncommon"]
+            ]
+        ],
+        ["Uncommon", "Uncommon", //UC x UC = 1-30 none, 31-40 common, 41-95 uncommon, 96-100 rare
+            [
+                [1, 30, "None"],
+                [31, 40, "Common"],
+                [41, 95, "Uncommon"],
+                [96, 100, "Rare"]
+            ]
+        ],
+        ["Rare", "Rare", //R x R = 1-50 none, 51-65 uncommon, 66-100 rare
+            [
+                [1, 50, "None"],
+                [51, 65, "Uncommon"],
+                [66, 100, "Rare"]
+            ]
+        ]
+    ];
+
+    /////// EARS RULES ////////
+
+    var earsRules =  [
+
+        ["Common", "Common",
+            [
+                [1, 100, "Common"]
+            ]   
+        ],
+        ["Uncommon", "Uncommon",
+            [
+                [1, 100, "Uncommon"]
+            ]   
+        ],
+        ["Rare", "Rare",
+            [
+                [1, 100, "Rare"]
+            ]   
+        ],
+        ["Common", "Uncommon", //C x UC = 1-60 common, 61-100 uncommon
+            [
+                [1, 60, "Common"],
+                [61, 100, "Uncommon"]
+            ]   
+        ],
+        ["Common", "Rare", //C x R = 1-90 common, 91-100 rare
+            [
+                [1, 90, "Common"],
+                [91, 100, "Rare"]
+            ]   
+        ],
+        ["Uncommon", "Rare", //UC x R = 1-74 uncommon, 75-100 rare
+            [
+                [1, 74, "Uncommon"],
+                [75, 100, "Rare"]
+            ]
+        ]
+    ];
+
+    ////// HORNS /////
+
+    // Rarity: 0 = Common, 1 = Uncommon, 2 = Rare
+
+    var horns = [
+
+        ["Short",   0],
+        ["Devil",   0],
+        ["Rhino",   0],
+        ["Kirln",   0],
+        ["Para",    0],
+        ["Curved",  0],
+
+        ["Twin",    1],
+        ["Ram",     1],
+        ["Deer",    1],
+        ["Dragonic",1],
+
+        ["Bristte", 2],
+        ["Fin",     2],
+        ["Moose",   2],
+        ["Unicorn", 2],
+        ["Crown",   2]
+    ];
+
+     var hornsRules =  [
+
+        ["Common", "Common",
+            [
+                [1, 100, "Common"]
+            ]   
+        ],
+        ["Uncommon", "Uncommon",
+            [
+                [1, 100, "Uncommon"]
+            ]   
+        ],
+        ["Rare", "Rare",
+            [
+                [1, 100, "Rare"]
+            ]   
+        ],
+        ["Common", "Uncommon", //C x UC = 1-70 common, 71-100 uncommon
+            [
+                [1, 70, "Common"],
+                [71, 100, "Uncommon"]
+            ]   
+        ],
+        ["Common", "Rare", //C x R = 1-95 common, 96-100 rare
+            [
+                [1, 95, "Common"],
+                [96, 100, "Rare"]
+            ]   
+        ],
+        ["Uncommon", "Rare", //UC x R = 1-89 uncommon, 90-100 rare
+            [
+                [1, 89, "Uncommon"],
+                [90, 100, "Rare"]
+            ]
+        ]
+    ];
+
+    ////// EARS /////
+
+    // Rarity: 0 = Common, 1 = Uncommon, 2 = Rare
+
+    var ears = [
+
+        ["Regular",   0],
+        ["Small",   0],
+        ["High",   0],
+        ["Tuft",   0],
+        
+        ["Floppy",    1],
+        ["Folded",     1],
+        ["Lynx",    1],
+
+        ["Droop", 2],
+        ["Elf",     2],
+        ["Papillon",   2]
+    ];
+
+    /*
+    var AaRules = [];
+
+    AaRules.push(new Rule("Aa", "aa", 
+     [            
+        [
+            [40, "Aa"],
+            [100, "aa"]
+        ]            
+    ] ));
+
+    var rule = {
+        parent1gene: "Aa",
+        parent2gene: "aa",
+        rolls = [            
+            [
+                [40, "Aa"],
+                [100, "aa"]
+            ]            
+        ]
+    } */
+
+    var commonMarkingsRules =  [
+
+        ["nU", "--", //nU x -- = 1-40 to pass
+            [
+                [1, 40, "nU"],
+                [41, 100, "--"]
+            ]   
+        ],
+        ["UU", "--", //UU x -- = 1-5 pass dominant, 1-50 pass non dominant, 51-100 not pass
+            [
+                [1, 5, "UU"],
+                [6, 50, "nU"], // fix to 6 - ES
+                [51, 100, "--"]
+            ]   
+        ],
+        ["nU", "nU", //1-15 to pass dominant, 16-70 pass non dominant, 71-100 not pass
+            [
+                [1, 15, "UU"],
+                [16, 70, "nU"],
+                [71, 100, "--"]
+            ]   
+        ],
+        ["nU", "UU", //nU x UU = 1-40 to pass dominant, 41-90 non dominant, 91-100 not pass
+            [
+                [1, 40, "UU"],
+                [41, 90, "nU"],
+                [91, 100, "--"]
+            ]   
+        ],
+        ["UU", "UU", //UU x UU = 1-60 pass dominant, 61-100 non dominant
+            [
+                [1, 60, "UU"],
+                [61, 100, "nU"]
+            ]
+        ]
+    ];
+
+    var uncommonMarkingsRules = [
+
+        ["nU", "--", //nU x -- = 1-20 to pass
+            [
+                [1, 20, "nU"],
+                [21, 100, "--"]
+            ]   
+        ],
+        ["UU", "--", //UU x -- = 1-2 pass dominant, 4-35 pass non dominant, 36-100 not pass
+            [
+                [1, 2, "UU"],
+                [3, 35, "nU"], // FIXED TO 3 -ES
+                [36, 100, "--"]
+            ]
+        ],
+        ["nU", "nU", //nU x nU = 1-10 to pass dominant, 11-45 pass non dominant, 46-100 not pass
+            [
+                [1, 10, "UU"],
+                [11, 45, "nU"],
+                [46, 100, "--"]
+            ]
+        ],
+        ["nU", "UU", //nU x UU = 1-15 to pass dominant, 16-60 non dominant, 61-100 not pass
+            [
+                [1, 15, "UU"],
+                [16, 60, "nU"],
+                [61, 100, "--"]
+            ]
+        ],
+        ["UU", "UU", //UU x UU = 1-20 pass dominant, 21-85 non dominant, 86-100 not pass
+            [
+                [1, 20, "UU"],
+                [21, 85, "nU"],
+                [86, 100, "--"]
+            ]
+        ]
+    ];
+
+    var rareMarkingsRules = [
+
+        ["nU", "--", //nU x -- = 1-10 to pass
+            [
+                [1, 10, "nU"],
+                [11, 100, "--"]
+            ]   
+        ],
+        ["UU", "--", //UU x -- = 1-15 pass non dominant, 21-100 not pass
+            [
+                [1, 15, "nU"],
+                [21, 100, "--"]
+            ]
+        ],
+        ["nU", "nU", //nU x nU = 1-2 to pass dominant, 3-25 pass non dominant, 26-100 not pass
+            [
+                [1, 2, "UU"],
+                [3, 25, "nU"],
+                [26, 100, "--"]
+            ]
+        ],
+        ["nU", "UU", //nU x UU = 1-5 to pass dominant, 11-35 non dominant, 46-100 not pass
+            [
+                [1, 5, "UU"],
+                [6, 35, "nU"], // changed to 6-35 -ES
+                [36, 100, "--"] // changed to 36 -ES
+            ]
+        ],
+        ["UU", "UU", //UU x UU = 1-10 pass dominant, 26-60 non dominant, 61-100 not pass
+            [
+                [1, 10, "UU"],
+                [11, 60, "nU"], // FIXED TO 11 -ES
+                [61, 100, "--"]
+            ]
+        ]
+    ];
+
+    function getMarkingRarity(markingType)
+    {
+        var rarities  = ["Common", "Uncommon", "Rare"]; // helper array to help use the number coded rarities
+
+        // Find markings rarity
+        for(var i = 0; i < markings.length; i++)
+        {
+            console.log("Checking " + markings[i][1] + " and " + markings[i][2] + " " + markingType);
+
+            if(markings[i][1] == markingType || markings[i][2] == markingType)
+            {
+                console.log("Marking rarity is " +  rarities[markings[i][3]]);
+                return rarities[markings[i][3]];
+            }
+        }
+
+        console.log("ERROR! Could not find Markings rarity");
+
+        return "ERROR! Could not find Markings rarity";
+    }
+
+    function contains(a, obj) 
+    {
+        for (var i = 0; i < a.length; i++) {
+            if (a[i] === obj) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+        var markings = [ 
+        ["Blanket", "Blbl", "nBl", 0],
+        ["Bubble", "BuBu", "nBU", 0],
+        ["Collar", "CoCo", "nCo", 0],
+        ["Dalmatian", "DaDa", "nDa", 0], */
+
+
+    /**
+    * returns UU, nU or -- depending on the marking
+    */
+    function getMarkingDom(marking)
+    {
+        if(marking == "--")
+        {
+            return "--";
+        }
+
+        for(i = 0; i < markings.length; i++)
+        {
+            //console.log("DOM CHECK: " + markings[i][1] + " AND " + marking);
+
+            if(markings[i][1] == marking)
+            {
+                //console.log("Found match!: " + markings[i][1] + " AND " + marking);
+
+
+                return "UU";
+            }
+
+            //console.log("DOM CHECK: " + markings[i][2] + " AND " + marking);
+
+            if(markings[i][2] == marking)
+            {
+                 //console.log("Found match!: " + markings[i][2] + " AND " + marking);
+
+                return "nU";
+            }
+
+
+        }
+
+        console.log("ERROR! could not find marking dom " + marking)
+
+        return undefined;
+    }
+
+    function getMarking(marking1, marking2, rules)
+    {
+        console.log(typeof(marking1));
+        console.log(typeof(marking2));
+
+        console.log("Marking1: " + marking1);
+        console.log("Marking 2: " + marking2);
+
+        var marking1Dom = getMarkingDom(marking1);
+        var marking2Dom = getMarkingDom(marking2);
+
+        console.log(marking1Dom);
+        console.log(marking2Dom);
+
+        for(var i = 0; i < rules.length; i++) {
+
+            console.log("Checking if " +  rules[i][0] + " matches " + marking1Dom + " and " + rules[i][1] + " matches " + marking2Dom);
+
+            if ( rules[i][0] == marking1Dom && rules[i][1] == marking2Dom || 
+                 rules[i][0] == marking2Dom && rules[i][1] == marking1Dom )
+            {
+                 console.log("Match found! Let's roll!");
+
+                var roll = RollMe(1, 100);
+                console.log("MatchFound roll: " + roll);
+
+                for(var j = 0; j < rules[i][2].length; j++)
+                {
+                    if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        var dom = rules[i][2][j][2]; // UU, nU, --
+
+                        if(dom == marking1Dom)
+                        {
+                            console.log(marking1);
+                            return marking1.toString();
+                        }                            
+                        else if (dom == marking2Dom)
+                        {
+                             console.log(marking2);
+                             return marking2.toString();
+                        }                            
+                        else
+                        {
+                            console.log("--");
+                            return "--";
+                        }
+                           
+                    } 
+                }
+
+                break;
+            }
+        }
+
+        console.log("ERROR! Did not find a match for " + marking1 + " and " + marking2)
+    }
+
+    /**
+    * Compares the target array and general array and returns true if target has a marking of the same type.
+    */
+    function containsSameTypeMarking(marking, target)
+    {
+        for(var i = 0; i < target.length; i++)
+        {
+            if(marking == target[i]) // target array has the exact same type, no need to check for similar type
+                return true;
+
+            for(var j = 0; j < markings.length; j++)
+            {
+                if( (markings[j][1] == marking || markings[j][2] == marking) )
+                {
+                    if(target[i] == markings[j][1] || target[i] == markings[j][2]) 
+                    {
+                        // We have a found a marking of similar type!
+                        return true;
+                    }
+                } 
+            }
+        }
+
+        return false;
+    }
+
+    /** 
+    * Returns target's marking if it is the same type as the marking. If not, returns "--";
+    */
+    function getMarkingIfSameType(marking, target)
+    {
+        var markingOtherType = ""; // Marking's
+
+        for(var m = 0; m < markings.length; m++)
+        {
+            console.log("Checking " + markings[m][1] + " and " + marking);
+            console.log("Checking " + markings[m][2] + " and " + marking);
+
+            if( (markings[m][1] == marking || markings[m][2] == marking) )
+            {
+                console.log("FOUND MATCH! " + marking);
+
+                if(marking == markings[m][1]) 
+                {
+                    console.log("it's this one! " + marking);
+                    markingOtherType = markings[m][2];
+                }
+                else if(marking == markings[m][2]) 
+                {
+                    console.log("it's this one! " + marking);
+                    markingOtherType = markings[m][1];
+                }
+
+                break;
+            }
+        }
+
+        for(var n = 0; n < target.length; n++)
+        {
+            console.log("Checking " + target[n] + " and " + marking + " " + n);
+
+            if(target[n] == marking)
+            {
+                console.log("match found: " + target);
+
+                return target[n];
+            }
+            else if(target[n] == markingOtherType)
+            {
+                console.log("match found: " + markingOtherType);
+
+                return target[n];
+            }
+        }
+
+        console.log("no match found");
+
+        return "--";
+    }
+
+    function calculateMarkingssss(mumMarkings, dadMarkings)
+    {
+        var markingsStr = "";
+
+        console.log("MumMarkings length: " + mumMarkings.length);
+
+        // for(i = 0; i < mumMarkings.length; i++)
+        // {
+        //     console.log(mumMarkings[i]);
+        // }
+
+        for(var i = 0; i < mumMarkings.length; i++)
+        {
+            console.log("Checking before: " + mumMarkings[i]);
+
+            console.log(i); 
+            
+            var vastaMarking = getMarkingIfSameType(mumMarkings[i], dadMarkings);
+
+            console.log(i);
+
+            console.log("Checking after: " + mumMarkings[i]);
+
+            var mumMarking = "";
+            mumMarking = mumMarkings[i];
+
+            //var markingRarity = getMarkingRarity(mumMarking);
+
+            var rarities  = ["Common", "Uncommon", "Rare"]; // helper array to help use the number coded rarities
+            var markingRarity = "";
+
+            // Find markings rarity
+            for(var j = 0; j < markings.length; j++)
+            {
+                console.log("Checking " + markings[j][1] + " and " + markings[j][2] + " " + mumMarking);
+
+                if(markings[j][1] == mumMarkings[i] || markings[j][2] == mumMarkings[i])
+                {
+                    console.log("Marking rarity is " +  rarities[markings[j][3]]);
+                    markingRarity = rarities[markings[j][3]];
+                    break;
+                }
+            }            
+
+            console.log("Checking: " + mumMarkings[i]);
+
+            var marking = "";
+
+            if(markingRarity == "Common") 
+            { 
+                marking = getMarking(mumMarkings[i], vastaMarking, commonMarkingsRules); 
+            }
+            else if (markingRarity == "Uncommon" ) 
+            { 
+                marking = getMarking(mumMarkings[i], vastaMarking, uncommonMarkingsRules);
+            }
+            else 
+            { 
+                marking = getMarking(mumMarkings[i], vastaMarking, rareMarkingsRules); 
+            }
+
+            console.log("Marking: " + marking);
+
+            console.log("WHAT IS i? " + i)
+
+            if(marking != "--")
+            {
+                console.log(markingsStr);
+
+                markingsStr += marking + "/";
+
+/*
+                index = dadMarkings.indexOf(marking); // Remove found marking of same type    
+                if (index > -1) {
+                    dadMarkings.splice(index, 1);
+                }*/
+            }
+        }      
+
+        console.log(markingsStr);  
+
+        return markingsStr;
+    }
+
+    /**
+    * Returns found markings in an array.
+    */
+    function getMarkings(genos)
+    {
+        var markingsAr = [];
+
+        for(var i = 0; i < genos.length; i++)
+        {
+            if(genos[i].toLowerCase() != "aa" 
+            && genos[i].toLowerCase() != "xx"
+            && genos[i].toLowerCase() != "oo"
+            && genos[i].toLowerCase() != "ee")
+            {
+                markingsAr[markingsAr.length] = genos[i];
+            }
+        }
+
+        return markingsAr;
+    }
+
+    function getXoColor(mumGenos, dadGenos)
+    {
+         var XoColor = "";
+
+         if(mumGenos.length <= 2 || dadGenos.length <= 2)
+            return XoColor;
+
+        if((mumGenos[2].toLowerCase() == "xx" || mumGenos[2].toLowerCase() == "oo") &&
+            (dadGenos[2].toLowerCase() == "xx" || dadGenos[2].toLowerCase() == "oo"))
+        {
+           // XoColor = getXoColor(mumGenos[2], dadGenos[2]);
+        }
+
+        return XoColor;
+    }
+
+    function breed()
+    {
+        console.log("Breed!");
+
+        var mumgeno = document.getElementById("mumgeno").value;
+        var dadgeno = document.getElementById("dadgeno").value;
+
+        var mumGenos = mumgeno.split("/");
+        var dadGenos = dadgeno.split("/");
+
+        var mumMarkings = getMarkings(mumGenos);
+        var dadMarkings = getMarkings(dadGenos);       
+
+        console.log("MumMarkings length:" + mumMarkings.length);
+        console.log("Dad length:" + dadMarkings.length);
+
+        var mumBreed = document.getElementById("mumBreed").value;
+        var dadBreed = document.getElementById("dadBreed").value;
+
+        console.log("mumBreed: " + mumBreed + " dadBreed: " + dadBreed);
+
+        var breed;
+
+        if(mumBreed != dadBreed)
+        {
+            var roll = RollMe(1,4);
+
+            if(roll <= 3)
+            {
+                breed = "Common";
+            }
+            else
+                breed = "Prairie";
+        }
+        else
+        {
+            breed = mumBreed;
+        }
+
+        var gender;
+
+        var genderRoll = RollMe(1,2);
+        if(genderRoll == 1) { gender = "Male"; } else { gender = "Female" };
+
+        // Calculate base color
+
+        var AaColor = calculateBaseColor(mumGenos[0], dadGenos[0], AaRules);
+        var EeColor = calculateBaseColor(mumGenos[1], dadGenos[1], EeRules);
+
+        var XoColor = "";
+
+        var babyMarkings = calculateMarkingssss(mumMarkings, dadMarkings);
+
+        var ears = calculateEars(document.getElementById("mumEars").value, document.getElementById("dadEars").value, earsRules);
+        var horns =calculateHorns(document.getElementById("mumHorns").value, document.getElementById("dadHorns").value, hornsRules);
+
+        var mumTail = tails[document.getElementById("mumTail").value][0];
+        var dadTail = tails[document.getElementById("dadTail").value][0];
+
+        var tail = calculateTail(mumTail, dadTail);
+        if(tail == "None")
+            tail = "Regular";
+
+        var ruffle =calculateRuffle(ruffles[document.getElementById("mumRuffle").value][0], ruffles[document.getElementById("dadRuffle").value][0]);
+
+        var str;
+
+        str = breed + " Kukuri - " + gender + "<br/>"
+                + AaColor + "/" + EeColor + "/" + babyMarkings + "<br/>"
+                + ears + " Ears," + horns + " Horns" + "<br/>"
+                + tail + " Tail, " + ruffle + " Ruffle";
+
+        return str;
+    }
+
+   /*
+   EARS
+        Common (C) Uncommon (UC) Rare (R)
+
+        Breeding same rarity category is 50/50% chance to get either ears
+
+        C x UC = 1-60 common, 61-100 uncommon
+        C x R = 1-90 common, 91-100 rare
+        UC x R = 1-74 uncommon, 75-100 rare
+*/
+
+    function getEarsRarity(earsType)
+    {
+        var rarities  = ["Common", "Uncommon", "Rare"]; // helper array to help use the number coded rarities
+
+        // Find ears rarity
+        for(var i = 0; i < ears.length; i++)
+        {
+            //console.log("Checking " + ears[i][0] + " and " + earsType);
+
+            if(ears[i][0] == earsType)
+            {
+                return rarities[ears[i][1]];
+            }
+        }
+
+        console.log("ERROR! Could not find Ears rarity");
+
+        return "ERROR! Could not find Ears rarity";
+    }
+
+    function calculateEars(ears1, ears2, rules) // give rarity rules here
+    {
+        ears1 = ears[ears1][0];
+        ears2 = ears[ears2][0];
+
+        var ears1rarity = getEarsRarity(ears1);
+        var ears2rarity = getEarsRarity(ears2);
+
+        if(ears1rarity == ears2rarity) // If parents ears rarity is the same
+        {
+            console.log("Ears are the same rarity " + ears1rarity);
+
+            var roll = RollMe(1,2);
+            if(roll == 1)
+            {
+                return ears1;
+            }
+            else
+                return ears2;
+                
+        }
+
+        for(var i = 0; i < rules.length; i++)
+        {
+            if(rules[i][0] == ears1rarity && rules[i][1] == ears2rarity || rules[i][0] == ears2rarity && rules[i][1] == ears1rarity)
+            {
+                var roll = RollMe(1, 100);
+
+                for(j = 0; j < rules[i][2].length; j++)
+                {
+                    if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        var rarity = rules[i][2][j][2]; // Uncommon, Rare.. etc
+
+                        if(rarity == ears1rarity)
+                            return ears1;
+                        else 
+                            return ears2;
+                    } 
+                }
+
+                break;
+            }
+        }
+
+        return "ERROR: Could not calculate ears";
+    }
+
+     function getHornsRarity(hornsType)
+    {
+        var rarities  = ["Common", "Uncommon", "Rare"]; // helper array to help use the number coded rarities
+
+        // Find horns rarity
+        for(var i = 0; i < horns.length; i++)
+        {
+            console.log("Checking " + horns[i][0] + " and " + hornsType);
+
+            if(horns[i][0] == hornsType)
+            {
+                return rarities[horns[i][1]];
+            }
+        }
+
+        console.log("ERROR! Could not find Horns rarity");
+
+        return "ERROR! Could not find Horns rarity";
+    }
+
+    function calculateHorns(horns1, horns2, rules) // rules is rarity rules
+    {
+        console.log("Calculate horns before: " + horns1);
+
+        horns1 = horns[horns1][0]; // turn numbers into string values (2 => Rhino)
+        horns2 = horns[horns2][0];
+
+        console.log("Calculate horns after: " + horns1);
+
+        var horns1rarity = getHornsRarity(horns1);
+        var horns2rarity = getHornsRarity(horns2);
+
+        if(horns1rarity == horns2rarity) // If parents horns rarity is the same
+        {
+            console.log("Horns are the same rarity " + horns1rarity);
+
+            var roll = RollMe(1,2);
+            if(roll == 1)
+            {
+                return horns1;
+            }
+            else
+                return horns2;
+                
+        }
+
+        for(var i = 0; i < rules.length; i++) // If parents horns rarity differs
+        {
+            if(rules[i][0] == horns1rarity && rules[i][1] == horns2rarity || rules[i][0] == horns2rarity && rules[i][1] == horns1rarity)
+            {
+                var roll = RollMe(1, 100);
+
+                for(j = 0; j < rules[i][2].length; j++)
+                {
+                    if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        var rarity = rules[i][2][j][2]; // Uncommon, Rare.. etc
+
+                        if(rarity == horns1rarity)
+                            return horns1;
+                        else 
+                            return horns2;
+                    } 
+                }
+
+                break;
+            }
+        }
+
+        return "ERROR: Could not calculate horns";
+    }
+
+    function getTailRarity(tail)
+    {
+        for(var i = 0; i < tails.length; i++)
+        {
+            if(tail == tails[i][0])
+                return tails[i][1];
+        }
+    }
+
+    function getTailByRarity(rarity)
+    {
+        for(var i = 0; i < tails.length; i++)
+        {
+            if(rarity == tails[i][1])
+                return tails[i][0];
+        }
+    }
+
+    function calculateTail(tail1, tail2)
+    {
+        var tail1Rarity = getTailRarity(tail1);
+        var tail2Rarity = getTailRarity(tail2);
+
+        for(var i = 0; i < tailsRufflesRules.length; i++)
+        {
+             //console.log("Checking if " + tailsRufflesRules[i][0] + " or "  + tailsRufflesRules[i][1] + " matches " + tail1Rarity + " and " + tail2Rarity);
+
+             if(tailsRufflesRules[i][0] == tail1Rarity && tailsRufflesRules[i][1] == tail2Rarity || 
+                tailsRufflesRules[i][0] == tail2Rarity && tailsRufflesRules[i][1] == tail1Rarity)
+            {
+                //console.log("Going through rule" + i);
+
+                var roll = RollMe(1, 100);
+
+                //console.log(roll);
+
+                for(var j = 0; j < tailsRufflesRules[i][2].length; j++)
+                {
+                    if(roll >= tailsRufflesRules[i][2][j][0] && roll <= tailsRufflesRules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        return getTailByRarity(tailsRufflesRules[i][2][j][2]);
+                    } 
+                }
+
+                break;
+            }
+        }
+    }
+
+    function getRuffleRarity(ruffle)
+    {
+        for(var i = 0; i < ruffles.length; i++)
+        {
+            if(ruffle == ruffles[i][0])
+                return ruffles[i][1];
+        }
+    }
+
+    function getRuffleByRarity(rarity)
+    {
+        for(var i = 0; i < ruffles.length; i++)
+        {
+            if(rarity == ruffles[i][1])
+                return ruffles[i][0];
+        }
+    }
+
+    var phenotypes = 
+    [
+        ["Aa/ee", "Crimson"],
+        ["aa/Ee", "Hazel"],
+        ["aa/ee/Xx", "Raven"],
+        ["aa/ee/Oo", "Pearl"],
+        ["Aa/ee", "Crimson"],
+        ["Aa/Ee", "Amber"],
+        ["Aa/ee/Oo", "Velvet Crimson"],
+        ["Aa/ee/Oo", "Velvet Hazel"],
+        ["Aa/ee/Xx", "Ebon Crimson"],
+        ["aa/Ee/Xx", "Ebon Hazel"],
+        ["Aa/Ee/Xx", "Azure"],
+        ["Aa/Ee/Oo", "Jade"]
+    ]
+
+    function getPhenotype(genotype)
+    {
+        /*
+        var genos = genotype.split("/");
+        var baseColor = genotype[0] + "/" + genotyå*/
+    }
+
+
+    function calculateRuffle(ruffle1, ruffle2)
+    {
+        var ruffle1Rarity = getRuffleRarity(ruffle1);
+        var ruffle2Rarity = getRuffleRarity(ruffle2);
+
+        for(var i = 0; i < tailsRufflesRules.length; i++)
+        {
+             //console.log("Checking if " + tailsRufflesRules[i][0] + " or "  + tailsRufflesRules[i][1] + " matches " + tail1Rarity + " and " + tail2Rarity);
+
+             if(tailsRufflesRules[i][0] == ruffle1Rarity && tailsRufflesRules[i][1] == ruffle2Rarity || 
+                tailsRufflesRules[i][0] == ruffle2Rarity && tailsRufflesRules[i][1] == ruffle1Rarity)
+            {
+                //console.log("Going through rule" + i);
+
+                var roll = RollMe(1, 100);
+
+                //console.log(roll);
+
+                for(var j = 0; j < tailsRufflesRules[i][2].length; j++)
+                {
+                    if(roll >= tailsRufflesRules[i][2][j][0] && roll <= tailsRufflesRules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        return getRuffleByRarity(tailsRufflesRules[i][2][j][2]);
+                    } 
+                }
+
+                break;
+            }
+        }
+    }
+
+    function calculateMarkings(color1, color2, rules)
+    {
+        for(var i = 0; i < rules.length; i++)
+        {
+            console.log("Going through rules!");
+
+            //console.log("Checking if " + rules[i][0] + " or "  + rules[i][1] + " matches " + color1 + " and " + color2);
+
+            if(rules[i][0] == color1 && rules[i][1] == color2 || rules[i][0] == color2 && rules[i][1] == color1)
+            {
+                console.log("Going through rule" + i);
+
+                var roll = RollMe(1, 100);
+                document.getElementById("rollResult").innerHTML = roll;
+
+                console.log(roll);
+
+                for(var j = 0; j < rules[i][2].length; j++)
+                {
+                    if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        return rules[i][2][j][2];
+                    } 
+                }
+
+                break;
+            }
+        }
+
+        return undefined;
+    }
+
+    function calculateBaseColor(color1, color2, rules)
+    {
+        for(var i = 0; i < rules.length; i++)
+        {
+            //console.log("Going through rules!");
+
+            //console.log("Checking if " + rules[i][0] + " or "  + rules[i][1] + " matches " + color1 + " and " + color2);
+
+            if(rules[i][0] == color1 && rules[i][1] == color2 || rules[i][0] == color2 && rules[i][1] == color1)
+            {
+                //console.log("Going through rule" + i);
+
+                var roll = RollMe(1, 100);
+                document.getElementById("rollResult").innerHTML = roll;
+
+                //console.log(roll);
+
+                for(var j = 0; j < rules[i][2].length; j++)
+                {
+                    if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        return rules[i][2][j][2];
+                    } 
+                }
+
+                break;
+            }
+        }
+
+        return undefined;
+    }
+
+    function RollMe(min, max)
+    {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    function populate(sel, options)
+    {
+        if (sel) {
+            for(var i = 0; i < options.length; i++)
+                {
+                    sel.options[i] =new Option(options[i][0], i);
+                }       
+            }
+            else {
+                alert("Could not populate!");
+            }
+    }
+
+    function populateRanks(sel)
+    {
+        if (sel) {
+            for(var i = 0; i < ranks.length; i++)
+                {
+                    sel.options[i] =new Option(ranks[i], i);
+                }       
+            }
+            else {
+                alert("Could not populate ranks!");
+            }
+    }
+
+    window.onload = function() {
+        console.log('jihaa!'); 
+
+        populateRanks(document.breeder.mumRank);
+        populateRanks(document.breeder.dadRank);
+
+        populate(document.breeder.mumEars, ears);
+        populate(document.breeder.dadEars, ears);
+        populate(document.breeder.mumHorns, horns);
+        populate(document.breeder.dadHorns, horns);
+
+        populate(document.breeder.mumTail, tails);
+        document.breeder.mumTail.options[0].innerHTML = "Regular";
+        populate(document.breeder.dadTail, tails);
+        document.breeder.dadTail.options[0].innerHTML = "Regular";
+
+        populate(document.breeder.mumRuffle, ruffles);
+        populate(document.breeder.dadRuffle, ruffles);
+
+        populate(document.breeder.mumFeathertype, featherTypes);
+        populate(document.breeder.dadFeathertype, featherTypes);
+
+
+
+
+/*
+        var sel = document.breeder.mumEars; // or document.getElementsByName["req_one"[0];
+        if (sel) {
+
+            for(i = 0; i < ears.length; i++)
+            {
+                sel.options[i] =new Option(ears[i][0], i);
+            }       
+        }
+        else {
+            alert("Could not populate ears!");
+        }*/
+
+    };
+
+</script>
+
+
+
+
+</body>
+
+</html>

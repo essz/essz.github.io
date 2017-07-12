@@ -1,0 +1,46 @@
+body
+{
+	background-color: #F0F0F0;
+	margin: 0;
+	padding: 0;
+}
+
+#header
+{
+	margin:auto;
+	text-align: center;
+}
+
+#main
+{
+	margin: auto;
+	width: 1024px;
+}
+
+h1
+{
+	font-size:20px;
+}
+
+.section
+{
+	width: 300px;
+	border: 1px;
+	border: 5px solid red;
+	float:left;
+	padding: 10px;
+}
+
+
+
+.line
+{
+	/*float:left;*/
+	clear:both;
+}
+
+.optionItem
+{
+	float:left;
+}
+
