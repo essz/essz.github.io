@@ -308,13 +308,13 @@
 
         ["oo", "oo", //Always passes oo
             [
-                [1, 100, "ooaa"]
+                [1, 100, "oo"]
             ]   
         ],
         ["Oo", "oo", //Oo x oo = 1-15 pass Oo
             [
                 [1, 15, "Oo"],
-                [16, 100, "nopass"]
+                [16, 100, "--"]
             ]   
         ],
         ["Oo", "Oo", //Oo x Oo = 1-2 pass OO, 3-25 pass Oo, 26-100 pass oo
@@ -340,6 +340,44 @@
         ]
     ];
 
+     /////// XX RULES ////////
+
+    var XxRules =  [
+
+        ["xx", "xx", //Always passes xx
+            [
+                [1, 100, "xx"]
+            ]   
+        ],
+        ["Xx", "xx", //Xx x xx = 1-15 pass Xx
+            [
+                [1, 15, "Xx"],
+                [16, 100, "--"]
+            ]   
+        ],
+        ["Xx", "Xx", //Xx x Xx = 1-2 pass XX, 3-25 pass Xx, 26-100 pass xx
+            [
+                [1, 2, "XX"],
+                [3, 25, "Xx"],
+                [26, 100, "xx"]
+            ]   
+        ],
+        ["XX", "xx", //XX x xx = 1 pass XX, 2-20 pass Xx, 21-100 pass xx
+            [
+                [1, 1, "XX"],
+                [2, 20, "Xx"],
+                [21, 100, "xx"]
+            ]   
+        ],
+        ["XX", "Xx", //XX x Xx = 1-5 pass XX, 6-40 pass Xx, 41-100 pass xx
+            [
+                [1, 5, "XX"],
+                [6, 40, "Xx"],
+                [21, 100, "xx"]
+            ]   
+        ]
+    ];
+
     /////// XX OO RULES ////////
 
     var XxOoRules =  [
@@ -360,7 +398,8 @@
         ["XX", "OO", //XX x OO = 1-10 dom XX, 11-50 Xx, 51-90 Oo, 91-100 dom OO
             [
                 [1, 10, "XX"],
-                [11, 50, "Oo"],
+                [11, 50, "Xx"],
+                [51, 90, "Oo"],
                 [91, 100, "OO"]
             ]   
         ]
@@ -386,7 +425,7 @@
         ["Shadow", "SwSw", "nSw", 0],
         ["Skunk", "SkSk", "nSk", 0],
         ["Smoke", "SmSm", "nSm", 0],
-        ["Socks", "SoSo", "NSo", 0],
+        ["Socks", "SoSo", "NSo", 0], // <-- typo?
         ["Tailwind", "TwTw", "nTw", 0],
         ["Underbelly", "UU", "nU", 0],
         ["Viper", "VrVr", "nVr", 0],
@@ -778,11 +817,11 @@
         // Find markings rarity
         for(var i = 0; i < markings.length; i++)
         {
-            console.log("Checking " + markings[i][1] + " and " + markings[i][2] + " " + markingType);
+            //console.log("Checking " + markings[i][1] + " and " + markings[i][2] + " " + markingType);
 
             if(markings[i][1] == markingType || markings[i][2] == markingType)
             {
-                console.log("Marking rarity is " +  rarities[markings[i][3]]);
+                //console.log("Marking rarity is " +  rarities[markings[i][3]]);
                 return rarities[markings[i][3]];
             }
         }
@@ -861,20 +900,20 @@
         var marking1Dom = getMarkingDom(marking1);
         var marking2Dom = getMarkingDom(marking2);
 
-        console.log(marking1Dom);
-        console.log(marking2Dom);
+        //console.log(marking1Dom);
+        //console.log(marking2Dom);
 
         for(var i = 0; i < rules.length; i++) {
 
-            console.log("Checking if " +  rules[i][0] + " matches " + marking1Dom + " and " + rules[i][1] + " matches " + marking2Dom);
+            //console.log("Checking if " +  rules[i][0] + " matches " + marking1Dom + " and " + rules[i][1] + " matches " + marking2Dom);
 
             if ( rules[i][0] == marking1Dom && rules[i][1] == marking2Dom || 
                  rules[i][0] == marking2Dom && rules[i][1] == marking1Dom )
             {
-                 console.log("Match found! Let's roll!");
+                 //console.log("Match found! Let's roll!");
 
                 var roll = RollMe(1, 100);
-                console.log("MatchFound roll: " + roll);
+                //console.log("MatchFound roll: " + roll);
 
                 for(var j = 0; j < rules[i][2].length; j++)
                 {
@@ -943,8 +982,8 @@
 
         for(var m = 0; m < markings.length; m++)
         {
-            console.log("Checking " + markings[m][1] + " and " + marking);
-            console.log("Checking " + markings[m][2] + " and " + marking);
+            //console.log("Checking " + markings[m][1] + " and " + marking);
+            //console.log("Checking " + markings[m][2] + " and " + marking);
 
             if( (markings[m][1] == marking || markings[m][2] == marking) )
             {
@@ -1022,7 +1061,7 @@
             // Find markings rarity
             for(var j = 0; j < markings.length; j++)
             {
-                console.log("Checking " + markings[j][1] + " and " + markings[j][2] + " " + mumMarking);
+                //console.log("Checking " + markings[j][1] + " and " + markings[j][2] + " " + mumMarking);
 
                 if(markings[j][1] == mumMarkings[i] || markings[j][2] == mumMarkings[i])
                 {
@@ -1032,7 +1071,7 @@
                 }
             }            
 
-            console.log("Checking: " + mumMarkings[i]);
+            //console.log("Checking: " + mumMarkings[i]);
 
             var marking = "";
 
@@ -1100,13 +1139,46 @@
          if(mumGenos.length <= 2 || dadGenos.length <= 2)
             return XoColor;
 
-        if((mumGenos[2].toLowerCase() == "xx" || mumGenos[2].toLowerCase() == "oo") &&
-            (dadGenos[2].toLowerCase() == "xx" || dadGenos[2].toLowerCase() == "oo"))
+        var mumXo = "";
+
+        if((mumGenos[2].toLowerCase() == "xx" || mumGenos[2].toLowerCase() == "oo"))
         {
-           // XoColor = getXoColor(mumGenos[2], dadGenos[2]);
+            mumXo = mumGenos[2];
         }
 
+        var dadXo = "";
+
+        if((dadGenos[2].toLowerCase() == "xx" || dadGenos[2].toLowerCase() == "oo"))
+        {
+            dadXo = dadGenos[2];
+        }
+
+        console.log("mumXo: " + mumXo + " dadXo: " + dadXo);
+        console.log()
+
+        if(mumXo.toLowerCase() == "xx" && dadXo.toLowerCase() == "xx")
+        {
+            XoColor = calculateBaseColor(mumXo, dadXo, XxRules);
+        }
+        else if(mumXo.toLowerCase() == "oo" && dadXo.toLowerCase() == "oo")
+        {
+            XoColor = calculateBaseColor(mumXo, dadXo, OoRules);
+        }
+        else if((mumXo.toLowerCase() == "xx" && dadXo.toLowerCase() == "oo") || 
+                (dadXo.toLowerCase() == "xx" && mumXo.toLowerCase() == "oo"))
+        {
+            XoColor = calculateBaseColor(mumXo, dadXo, XxOoRules);
+        }
+
+        if(XoColor == undefined)
+            XoColor = "--";
+
         return XoColor;
+    }
+
+    function calculateFeathertype()
+    {
+
     }
 
     function breed()
@@ -1158,7 +1230,7 @@
         var AaColor = calculateBaseColor(mumGenos[0], dadGenos[0], AaRules);
         var EeColor = calculateBaseColor(mumGenos[1], dadGenos[1], EeRules);
 
-        var XoColor = "";
+        var XoColor = getXoColor(mumGenos, dadGenos);
 
         var babyMarkings = calculateMarkingssss(mumMarkings, dadMarkings);
 
@@ -1174,12 +1246,40 @@
 
         var ruffle =calculateRuffle(ruffles[document.getElementById("mumRuffle").value][0], ruffles[document.getElementById("dadRuffle").value][0]);
 
+        var tailStr = "";
+        var ruffleStr = "";
+        var XoColorStr = "";
+
+        var baseColor = [];
+        baseColor[0] = AaColor;
+        baseColor[1] = EeColor;
+        if(XoColor != "" && XoColor != "--")
+            baseColor[2] = XoColor;
+
+        var phenotype = getPhenotype(baseColor, babyMarkings);
+
+        if(tail != "Regular")
+        {
+            tailStr = tail + " Tail, ";
+        }
+
+        if(ruffle != "None")
+        {
+            ruffleStr = ruffle + " Ruffle";
+        }
+
+        if(XoColor != "" && XoColor != "--" )
+        {
+            XoColorStr = XoColor + "/";
+        }
+
         var str;
 
         str = breed + " Kukuri - " + gender + "<br/>"
-                + AaColor + "/" + EeColor + "/" + babyMarkings + "<br/>"
+                + AaColor + "/" + EeColor + "/" + XoColorStr + babyMarkings + "<br/>"
                 + ears + " Ears," + horns + " Horns" + "<br/>"
-                + tail + " Tail, " + ruffle + " Ruffle";
+                + phenotype + "</br>"
+                + tailStr + " " + ruffleStr;
 
         return str;
     }
@@ -1270,7 +1370,7 @@
         // Find horns rarity
         for(var i = 0; i < horns.length; i++)
         {
-            console.log("Checking " + horns[i][0] + " and " + hornsType);
+            //console.log("Checking " + horns[i][0] + " and " + hornsType);
 
             if(horns[i][0] == hornsType)
             {
@@ -1402,7 +1502,7 @@
         }
     }
 
-    var phenotypes = 
+    var baseColors = 
     [
         ["Aa/ee", "Crimson"],
         ["aa/Ee", "Hazel"],
@@ -1418,11 +1518,54 @@
         ["Aa/Ee/Oo", "Jade"]
     ]
 
-    function getPhenotype(genotype)
+    function getPhenotype(baseColor, markingsAr)
     {
-        /*
-        var genos = genotype.split("/");
-        var baseColor = genotype[0] + "/" + genotyå*/
+        var genoStr = "";
+        var phenoStr = "";
+
+        genoStr =baseColor[0] + "/";
+        genoStr += baseColor[1];
+
+        // We don't care about small xx and oo with phenotypes since they are non-dominant genes
+        if(baseColor[2] == "Xx" || baseColor[2] == "XX" || baseColor[2] == "Oo" || baseColor[2] == "OO") 
+        {
+            genoStr += "/"+ baseColor[2];
+        }
+
+        console.log(genoStr);
+
+        var baseColorStr = "";
+        for(var i = 0; i < baseColors.length; i++)
+        {
+            if(baseColors[i][0] == genoStr)
+            {
+                phenoStr = baseColors[i][1];
+                break;
+            }               
+        }
+
+        var markingsStr = "";
+
+        if(markingsAr.length > 0)
+            markingsStr = " with ";
+        
+        for(var i = 0; i < markingsAr; i++)
+        {
+            for(var j = 0; j < markings.length; j++)
+            {
+                if(markingsAr[i] == markings[j][1] || markingsAr[i] == markings[j][2]) {
+                     markingsStr += markings[j][0];
+                     markingsStr += ","
+                     break;
+                }                   
+            }
+        }
+
+        if (markingsStr[markingsStr.length-1] == ",")
+            markingsStr = markingsStr.substring(0, markingsStr.length - 1);
+
+        phenoStr += markingsStr;
+        return phenoStr;
     }
 
 
