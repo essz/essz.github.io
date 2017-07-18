@@ -1181,6 +1181,19 @@
 
     }
 
+    function isValidBaseColor(baseColor)
+    {
+        for(var i = 0; i < baseColors.length; i++)
+        {
+            if(baseColors[i][0] == baseColor)
+                return true;
+        }
+
+        console.log(baseColor + " is not valid base color!");
+
+        return false;
+    }
+
     function breed()
     {
         console.log("Breed!");
@@ -1227,10 +1240,30 @@
 
         // Calculate base color
 
-        var AaColor = calculateBaseColor(mumGenos[0], dadGenos[0], AaRules);
-        var EeColor = calculateBaseColor(mumGenos[1], dadGenos[1], EeRules);
+        var AaColor;
+        var EeColor;
+        var XoColor;
 
-        var XoColor = getXoColor(mumGenos, dadGenos);
+        for(var i = 0; i < 100; i++) // We attempt to make the base color 100 times in case we get an "illegal" base color
+        {
+            AaColor = calculateBaseColor(mumGenos[0], dadGenos[0], AaRules);
+            EeColor = calculateBaseColor(mumGenos[1], dadGenos[1], EeRules);
+
+            XoColor = getXoColor(mumGenos, dadGenos);
+
+            var baseColorCombined =AaColor + "/" + EeColor;
+
+            if(XoColor != "xx" && XoColor != "oo" && XoColor != "--" && XoColor != "") // We know there is no xx or oo color in base coats, but they can still be inherited as non-dominant
+            {
+                baseColorCombined += "/" + XoColor;
+            }
+
+            if(isValidBaseColor(baseColorCombined))
+            {
+                console.log("This is a valid base color. " + baseColorCombined);
+                break; // we have confirmed that this base color is accepted
+            }               
+        }      
 
         var babyMarkings = calculateMarkingssss(mumMarkings, dadMarkings);
 
@@ -1508,7 +1541,6 @@
         ["aa/Ee", "Hazel"],
         ["aa/ee/Xx", "Raven"],
         ["aa/ee/Oo", "Pearl"],
-        ["Aa/ee", "Crimson"],
         ["Aa/Ee", "Amber"],
         ["Aa/ee/Oo", "Velvet Crimson"],
         ["Aa/ee/Oo", "Velvet Hazel"],
