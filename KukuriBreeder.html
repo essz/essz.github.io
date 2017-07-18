@@ -33,7 +33,7 @@
 
     	<div class="optionItem">
 			<label for="mumBreed"><h4>Breed</h4></label>
-			<select id="mumBreed" onchange="toggleMumFeathertypeVisibility(this)">
+			<select id="mumBreed" onchange="toggleMumFeathertypeVisibility(this.value)">
 				<option>Common</option>
 				<option>Prairie</option>
 			</select>
@@ -44,6 +44,24 @@
 			<select id="mumRank" name="mumRank">
 			</select>
 		</div>
+
+    </div>
+
+    <div class="line">
+
+        <h2>Skill points</h2>
+
+        <div class="optionItem">
+            <input type="text" id="mumATK" size="3"  placeholder="ATK" />
+        </div>
+
+        <div class="optionItem">
+            <input type="text" id="mumDEF" size="3"  placeholder="DEF" /> 
+        </div>
+        
+        <div class="optionItem">
+            <input type="text" id="mumSPD" size="3"  placeholder="SPD" />
+        </div>
 
     </div>
 
@@ -101,7 +119,7 @@
 
         <div class="optionItem">
             <label for="dadBreed"><h4>Breed</h4></label>
-            <select id="dadBreed" onchange="toggleDadFeathertypeVisibility(this)">
+            <select id="dadBreed" onchange="toggleDadFeathertypeVisibility(this.value)">
                 <option>Common</option>
                 <option>Prairie</option>
             </select>
@@ -111,6 +129,24 @@
             <label for="dadRank"><h4>Rank</h4></label>
                 <select id="dadRank">
                 </select>
+        </div>
+
+    </div>
+
+        <div class="line">
+
+        <h2>Skill points</h2>
+
+        <div class="optionItem">
+            <input type="text" id="dadATK" size="3"  placeholder="ATK" />
+        </div>
+
+        <div class="optionItem">
+            <input type="text" id="dadDEF" size="3"  placeholder="DEF" /> 
+        </div>
+        
+        <div class="optionItem">
+            <input type="text" id="dadSPD" size="3"  placeholder="SPD" />
         </div>
 
     </div>
@@ -174,15 +210,15 @@
 
     function toggleMumFeathertypeVisibility(breed)
     {
-        console.log("MUM FEATHER TYPE VISIBILITYY");
+        console.log("MUM FEATHER TYPE VISIBILITYY" + breed);
 
-        if(breed == 1) // Prairie
+        if(breed == "Prairie")
         {
-            document.getElementById("mumFeathertypeDiv").style.display = "visible";
+            document.getElementById("mumFeathertypeDiv").style.display = "block";
         }
         else
         {
-             document.getElementById("mumFeathertypeDiv").style.display = "hidden";
+             document.getElementById("mumFeathertypeDiv").style.display = "none";
         }
     }
 
@@ -190,13 +226,13 @@
     {
         console.log("DAD FEATHER TYPE VISIBILITYY");
 
-        if(breed == 1) // Prairie
+        if(breed == "Prairie")
         {
-            document.getElementById("dadFeathertypeDiv").style.display = "visible";
+            document.getElementById("dadFeathertypeDiv").style.display = "block";
         }
         else
         {
-             document.getElementById("dadFeathertypeDiv").style.display = "hidden";
+             document.getElementById("dadFeathertypeDiv").style.display = "none";
         }
     }
 
@@ -1194,6 +1230,80 @@
         return false;
     }
 
+    function refuses(myRank, otherRank)
+    {
+        if(myRank == "Arisen" || otherRank == "Arisen")
+        {
+            return false;
+        }
+        else if(myRank == "Zeta+")         
+        {
+            if(otherRank == "Zeta+" || otherRank == "Arisen")
+            {
+                 return false;
+            }
+            else 
+                return true;           
+        }
+        else if(otherRank == "None")
+        {
+            var roll = RollMe(1,10);
+            if(roll == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    function getNestSize(mumRank, dadRank)
+    {
+        var mumRefuse = refuses(mumRank, dadRank);
+        var dadRefuse = refuses(dadRank, mumRank);
+        var nestSize = 0;
+
+        if(mumRefuse)
+        {
+            console.log("Due to the rook’s low rank, the dove refused to mate with them, resulting in an empty nest.");
+            return 0;
+        }            
+
+        if(dadRefuse)
+        {
+            console.log("Due to the dove's low rank, the rook refused to mate with them, resulting in an empty nest.");
+            return 0;
+        }            
+
+        if(mumRank == "Arisen" || dadRank == "Arisen")
+        {
+            var roll = RollMe(1,3);
+            var extraEggRoll = RollMe(1,10);
+
+            if(extraEggRoll == 1)
+            {
+                roll += 1;
+                console.log("Extra egg added to the nest!")
+            }
+
+            nestSize = roll;       
+        }
+        else if(mumRank == "Zeta+") // We know from conditions that dad has same or higher     
+        {
+           var roll = RollMe(1,3);
+           nestSize = roll;
+        }
+        else if(mumRank == "None" || mumRank == "Known")
+        {
+            var roll = RollMe(0,3);
+            nestSize = roll;
+        }
+
+        return nestSize;
+    }
+
     function breed()
     {
         console.log("Breed!");
@@ -1216,6 +1326,11 @@
         console.log("mumBreed: " + mumBreed + " dadBreed: " + dadBreed);
 
         var breed;
+
+        var mumRank = ranks[document.getElementById("mumRank").value];
+        var dadRank = ranks[document.getElementById("dadRank").value];
+        var nestSize =getNestSize(mumRank, dadRank);
+        console.log("NestSize: " + nestSize);
 
         if(mumBreed != dadBreed)
         {
