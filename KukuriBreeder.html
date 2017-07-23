@@ -102,6 +102,22 @@
         </div>
     </div>
 
+    <div class="line">
+
+        <div class="optionItem">
+            <label for="mumDiet"><h4>Diet</h4></label>
+            <select id="mumDiet" name="mumDiet">
+            </select>
+        </div>
+
+        <div class="optionItem">
+            <label for="mumBiorythmn"><h4>Biorythmn</h4></label>
+            <select id="mumBiorythmn" name="mumBiorythmn">
+            </select>
+        </div>
+
+    </div>
+
 </div>
 
 <div class="section">
@@ -189,6 +205,22 @@
 
     </div>
 
+    <div class="line">
+
+        <div class="optionItem">
+            <label for="dadDiet"><h4>Diet</h4></label>
+            <select id="dadDiet" name="dadDiet">
+            </select>
+        </div>
+
+        <div class="optionItem">
+            <label for="dadBiorythmn"><h4>Biorythmn</h4></label>
+            <select id="dadBiorythmn" name="dadBiorythmn">
+            </select>
+        </div>
+
+    </div>
+
 </div>
 
 <div class="section">
@@ -196,10 +228,7 @@
 <button type="button" onclick='document.getElementById("babyName").innerHTML = breed()'>Roll!</button>
 
 <p>Nest</p>
-
         <h4 id="babyName">Bebe</h4>
-        <h4 id="rollResult">Roll Result</h4>
-
 </div>
 
 </form>
@@ -210,8 +239,6 @@
 
     function toggleMumFeathertypeVisibility(breed)
     {
-        console.log("MUM FEATHER TYPE VISIBILITYY" + breed);
-
         if(breed == "Prairie")
         {
             document.getElementById("mumFeathertypeDiv").style.display = "block";
@@ -224,8 +251,6 @@
 
     function toggleDadFeathertypeVisibility(breed)
     {
-        console.log("DAD FEATHER TYPE VISIBILITYY");
-
         if(breed == "Prairie")
         {
             document.getElementById("dadFeathertypeDiv").style.display = "block";
@@ -251,6 +276,8 @@
         ["Emperor", "Rare"],
         ["Petal", "Rare"]
     ]
+    var biorythmns = ["Diurnal", "Crepuscular", "Nocturnal"];
+    var diets = ["Herbivore", "Omnivore", "Carnivore"];
 
     /////// AA RULES /////////
     var AaRules = 
@@ -1126,8 +1153,6 @@
 
             console.log("Marking: " + marking);
 
-            console.log("WHAT IS i? " + i)
-
             if(marking != "--")
             {
                 console.log(markingsStr);
@@ -1140,7 +1165,13 @@
                     dadMarkings.splice(index, 1);
                 }*/
             }
-        }      
+        }    
+
+        if(markingsStr.length > 0)
+        {
+            if (markingsStr[markingsStr.length-1] == "/")
+                markingsStr = markingsStr.substring(0, markingsStr.length - 1);
+        }
 
         console.log(markingsStr);  
 
@@ -1259,23 +1290,93 @@
         return false;
     }
 
+    //// BIORYTHMN RULES ////
+    var biorythmnRules = [
+
+        ["Crepuscular", "Crepuscular", // Cre x Cre = 1-100
+            [
+                [1, 100, "Crepuscular"]
+            ]
+        ],
+        ["Diurnal", "Diurnal", // Di x Di = 1-100
+            [
+                [1, 100, "Diurnal"]
+            ]
+        ],
+        ["Nocturnal", "Nocturnal", // Noc x Noc = 1-100
+            [
+                [1, 100, "Nocturnal"]
+            ]
+        ],
+        ["Diurnal", "Nocturnal",  // Di x Noc = 1-50 diurnal, 51-75 crepuscular, 76-100 Nocturnal
+            [
+                [1, 50, "Diurnal"],
+                [51, 75, "Crepuscular"],
+                [76, 100, "Nocturnal"]
+            ]
+        ],        
+        ["Diurnal", "Crepuscular", // Di x Cre = 1-65 diurnal, 66-95 crepuscular, 96-100 Nocturnal
+            [
+                [1, 65, "Diurnal"],
+                [66, 95, "Crepuscular"],
+                [96, 100, "Nocturnal"]
+            ]
+        ],
+        ["Crepuscular", "Nocturnal", // Cre x Noc = 1-30 diurnal, 31-60 crepuscular, 61-100 Nocturnal
+            [
+                [1, 30, "Diurnal"],
+                [31, 60, "Crepuscular"],
+                [61, 100, "Nocturnal"]
+            ]
+        ]
+    ]
+
+    //// DIET RULES ////
+    var dietRules = [
+
+        ["Herbivore", "Herbivore", // Herb x Herb = 1-100
+            [
+                [1, 100, "Herbivore"]
+            ]
+        ],
+        ["Omnivore", "Omnivore", // Omni x Omni = 1-100
+            [
+                [1, 100, "Omnivore"]
+            ]
+        ],
+        ["Carnivore", "Carnivore", // Carni x Carni = 1-100
+            [
+                [1, 100, "Carnivore"]
+            ]
+        ],
+        ["Herbivore", "Omnivore",  // Herb x Omni = 1-30 herb, 31-75 omni, 76-100 carni
+            [
+                [1, 30, "Herbivore"],
+                [31, 75, "Omnivore"],
+                [76, 100, "Carnivore"]
+            ]
+        ],        
+        ["Herbivore", "Carnivore", // Herb x Carni = 1-15 herb, 16-60 omni, 61-100 carni
+            [
+                [1, 15, "Herbivore"],
+                [16, 60, "Omnivore"],
+                [61, 100, "Carnivore"]
+            ]
+        ],
+        ["Omnivore", "Carnivore", // Omni x Carni = 1-5 herb, 6-60 omni, 61-100 carni
+            [
+                [1, 5, "Herbivore"],
+                [6, 60, "Omnivore"],
+                [61, 100, "Carnivore"]
+            ]
+        ]
+    ]
+
+
+
     function getNestSize(mumRank, dadRank)
     {
-        var mumRefuse = refuses(mumRank, dadRank);
-        var dadRefuse = refuses(dadRank, mumRank);
-        var nestSize = 0;
-
-        if(mumRefuse)
-        {
-            console.log("Due to the rook’s low rank, the dove refused to mate with them, resulting in an empty nest.");
-            return 0;
-        }            
-
-        if(dadRefuse)
-        {
-            console.log("Due to the dove's low rank, the rook refused to mate with them, resulting in an empty nest.");
-            return 0;
-        }            
+        var nestSize = 0;      
 
         if(mumRank == "Arisen" || dadRank == "Arisen")
         {
@@ -1304,34 +1405,32 @@
         return nestSize;
     }
 
-    function breed()
+    function calculateSkillpoints(parentPoints)
     {
-        console.log("Breed!");
+        var skillPoints = 0;
 
-        var mumgeno = document.getElementById("mumgeno").value;
-        var dadgeno = document.getElementById("dadgeno").value;
+        if(parentPoints >= 10)
+        {
+            var roll =RollMe(1,10);
+            if(roll == 1)
+                skillPoints = 1;
 
-        var mumGenos = mumgeno.split("/");
-        var dadGenos = dadgeno.split("/");
+            var afterTen = parentPoints - 10;
+            var jakoTasaTulos = afterTen/5;
 
-        var mumMarkings = getMarkings(mumGenos);
-        var dadMarkings = getMarkings(dadGenos);       
+            for(var i = 0; i < jakoTasaTulos; i++)
+            {
+                var sRoll =RollMe(1,10);
+                if(sRoll == 1)
+                    skillPoints += 1;
+            }
+        }
 
-        console.log("MumMarkings length:" + mumMarkings.length);
-        console.log("Dad length:" + dadMarkings.length);
+       return skillPoints;
+    }
 
-        var mumBreed = document.getElementById("mumBreed").value;
-        var dadBreed = document.getElementById("dadBreed").value;
-
-        console.log("mumBreed: " + mumBreed + " dadBreed: " + dadBreed);
-
-        var breed;
-
-        var mumRank = ranks[document.getElementById("mumRank").value];
-        var dadRank = ranks[document.getElementById("dadRank").value];
-        var nestSize =getNestSize(mumRank, dadRank);
-        console.log("NestSize: " + nestSize);
-
+    function createEgg(mumGenos, dadGenos, mumMarkings, dadMarkings, mumBreed, dadBreed, mumRank, dadRank)
+    {
         if(mumBreed != dadBreed)
         {
             var roll = RollMe(1,4);
@@ -1349,6 +1448,21 @@
         }
 
         var gender;
+        var breed;
+        var mumAtk = document.getElementById("mumATK").value;
+        var dadAtk = document.getElementById("dadATK").value;
+        var babyAtk =calculateSkillpoints(mumAtk);
+        babyAtk +=calculateSkillpoints(dadAtk);
+
+        var mumDef = document.getElementById("mumDEF").value;
+        var dadDef = document.getElementById("dadDEF").value;
+        var babyDef =calculateSkillpoints(mumDef);
+        babyDef +=calculateSkillpoints(dadDef);
+
+        var mumSpd = document.getElementById("mumSPD").value;
+        var dadSpd = document.getElementById("dadSPD").value;
+        var babySpd =calculateSkillpoints(mumSpd);
+        babySpd +=calculateSkillpoints(dadSpd);
 
         var genderRoll = RollMe(1,2);
         if(genderRoll == 1) { gender = "Male"; } else { gender = "Female" };
@@ -1421,27 +1535,80 @@
             XoColorStr = XoColor + "/";
         }
 
+        var skillPointsStr = " ATK " + babyAtk + " DEF " + babyDef + " SPD " + babySpd;
+
+        var bioryhtmnStr = "Biorythmn: ";
+        bioryhtmnStr += calculateBaseColor(biorythmns[document.getElementById("mumBiorythmn").value], biorythmns[document.getElementById("dadBiorythmn").value], biorythmnRules);
+
+        var dietStr = "Diet: ";
+
+        dietStr += calculateBaseColor(diets[document.getElementById("mumDiet").value], diets[document.getElementById("dadDiet").value], dietRules);
+
         var str;
 
         str = breed + " Kukuri - " + gender + "<br/>"
                 + AaColor + "/" + EeColor + "/" + XoColorStr + babyMarkings + "<br/>"
                 + ears + " Ears," + horns + " Horns" + "<br/>"
                 + phenotype + "</br>"
-                + tailStr + " " + ruffleStr;
+                + tailStr + " " + ruffleStr + "</br>"
+                + skillPointsStr + "</br>"
+                + bioryhtmnStr + "</br>"
+                + dietStr + "</br>";
 
         return str;
     }
 
-   /*
-   EARS
-        Common (C) Uncommon (UC) Rare (R)
+    function breed()
+    {
+        console.log("Breed!");
 
-        Breeding same rarity category is 50/50% chance to get either ears
+        var mumgeno = document.getElementById("mumgeno").value;
+        var dadgeno = document.getElementById("dadgeno").value;
 
-        C x UC = 1-60 common, 61-100 uncommon
-        C x R = 1-90 common, 91-100 rare
-        UC x R = 1-74 uncommon, 75-100 rare
-*/
+        var mumGenos = mumgeno.split("/");
+        var dadGenos = dadgeno.split("/");
+
+        var mumMarkings = getMarkings(mumGenos);
+        var dadMarkings = getMarkings(dadGenos);       
+
+        console.log("MumMarkings length:" + mumMarkings.length);
+        console.log("Dad length:" + dadMarkings.length);
+
+        var mumBreed = document.getElementById("mumBreed").value;
+        var dadBreed = document.getElementById("dadBreed").value;
+
+        console.log("mumBreed: " + mumBreed + " dadBreed: " + dadBreed);       
+
+        var mumRank = ranks[document.getElementById("mumRank").value];
+        var dadRank = ranks[document.getElementById("dadRank").value];
+
+        var mumRefuse = refuses(mumRank, dadRank);
+        var dadRefuse = refuses(dadRank, mumRank);
+
+        if(mumRefuse)
+        {
+             return "Due to the rook’s low rank, the dove refused to mate with them, resulting in an empty nest.";           
+        }            
+
+        if(dadRefuse)
+        {
+            return "Due to the dove's low rank, the rook refused to mate with them, resulting in an empty nest.";
+        }
+
+        var nestSize =getNestSize(mumRank, dadRank);
+        console.log("NestSize: " + nestSize);
+
+        var nestStr = "";
+
+        for(var i = 0; i < nestSize; i++)
+        {
+            console.log("Trying to create an egg");
+            nestStr += createEgg(mumGenos, dadGenos, mumMarkings, dadMarkings, mumBreed, dadBreed, mumRank, dadRank);
+            nestStr += "<br/><br/>";
+        }
+
+        return nestStr;
+    }
 
     function getEarsRarity(earsType)
     {
@@ -1665,13 +1832,18 @@
         ["Aa/Ee/Oo", "Jade"]
     ]
 
-    function getPhenotype(baseColor, markingsAr)
+    function getPhenotype(baseColor, kukuriMarkings)
     {
         var genoStr = "";
         var phenoStr = "";
 
-        genoStr =baseColor[0] + "/";
+        genoStr = baseColor[0] + "/";
         genoStr += baseColor[1];
+
+       
+
+        if(kukuriMarkings.length == 0 && kukuriMarkings[0] == "")
+            markingsAr = [];
 
         // We don't care about small xx and oo with phenotypes since they are non-dominant genes
         if(baseColor[2] == "Xx" || baseColor[2] == "XX" || baseColor[2] == "Oo" || baseColor[2] == "OO") 
@@ -1691,15 +1863,26 @@
             }               
         }
 
+        if(kukuriMarkings == "") // No markings
+            return phenoStr;
+
+        var markingsAr = kukuriMarkings.split("/");
         var markingsStr = "";
 
         if(markingsAr.length > 0)
             markingsStr = " with ";
+
+        console.log("MarkingsAr length: " + markingsAr.length);
+        console.log("Markings length: " + markings.length);
         
-        for(var i = 0; i < markingsAr; i++)
+        for(var i = 0; i < markingsAr.length; i++)
         {
+            console.log("What is i? " + i + " " + markingsAr[i]);
+
             for(var j = 0; j < markings.length; j++)
             {
+                console.log("Checking if " + markingsAr[i] + " matches " + markings[j][1] + " or " + markings[j][2]);
+
                 if(markingsAr[i] == markings[j][1] || markingsAr[i] == markings[j][2]) {
                      markingsStr += markings[j][0];
                      markingsStr += ","
@@ -1708,8 +1891,11 @@
             }
         }
 
-        if (markingsStr[markingsStr.length-1] == ",")
-            markingsStr = markingsStr.substring(0, markingsStr.length - 1);
+        if(markingsStr.length > 0)
+        {
+            if (markingsStr[markingsStr.length-1] == ",")
+                markingsStr = markingsStr.substring(0, markingsStr.length - 1);
+        }
 
         phenoStr += markingsStr;
         return phenoStr;
@@ -1760,7 +1946,6 @@
                 console.log("Going through rule" + i);
 
                 var roll = RollMe(1, 100);
-                document.getElementById("rollResult").innerHTML = roll;
 
                 console.log(roll);
 
@@ -1783,18 +1968,9 @@
     {
         for(var i = 0; i < rules.length; i++)
         {
-            //console.log("Going through rules!");
-
-            //console.log("Checking if " + rules[i][0] + " or "  + rules[i][1] + " matches " + color1 + " and " + color2);
-
             if(rules[i][0] == color1 && rules[i][1] == color2 || rules[i][0] == color2 && rules[i][1] == color1)
             {
-                //console.log("Going through rule" + i);
-
                 var roll = RollMe(1, 100);
-                document.getElementById("rollResult").innerHTML = roll;
-
-                //console.log(roll);
 
                 for(var j = 0; j < rules[i][2].length; j++)
                 {
@@ -1829,24 +2005,27 @@
             }
     }
 
-    function populateRanks(sel)
+    function populateOneDimensionSelection(sel, ar) // From a simple one-dimensional array 
     {
         if (sel) {
-            for(var i = 0; i < ranks.length; i++)
+            for(var i = 0; i < ar.length; i++)
                 {
-                    sel.options[i] =new Option(ranks[i], i);
+                    sel.options[i] =new Option(ar[i], i);
                 }       
             }
             else {
-                alert("Could not populate ranks!");
+                alert("Could not populate " + sel.name);
             }
     }
 
     window.onload = function() {
-        console.log('jihaa!'); 
 
-        populateRanks(document.breeder.mumRank);
-        populateRanks(document.breeder.dadRank);
+        populateOneDimensionSelection(document.breeder.mumRank, ranks);
+        populateOneDimensionSelection(document.breeder.dadRank, ranks);
+        populateOneDimensionSelection(document.breeder.dadBiorythmn, biorythmns);
+        populateOneDimensionSelection(document.breeder.mumBiorythmn, biorythmns);
+        populateOneDimensionSelection(document.breeder.dadDiet, diets);
+        populateOneDimensionSelection(document.breeder.mumDiet, diets);
 
         populate(document.breeder.mumEars, ears);
         populate(document.breeder.dadEars, ears);
