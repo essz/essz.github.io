@@ -3,6 +3,7 @@ body
 	background-color: #F0F0F0;
 	margin: 0;
 	padding: 0;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 #header
@@ -22,26 +23,53 @@ h1
 	font-size:20px;
 }
 
+h2
+{
+	font-size:20px;
+	font-style:bold;
+	text-shadow: -3px 0 white,0 3px white,3px 0 white,0 -3px white;
+	color: black;
+}
+
+h3
+{
+	font-size: 12px;
+}
+
 .section
 {
 	width: 300px;
 	border: 1px;
-	border: 5px solid red;
+	/*border: 5px solid #FAEBD7;*/
+	background-color: #FAEBD7;
+	border-radius: 25px;
 	float:left;
 	padding: 10px;
+	margin: 10px;
+	margin-top: 10px;
+
+	
+	/*
+    background: #73AD21;
+    padding: 20px; 
+    width: 200px;
+    height: 150px; */
 }
-
-
 
 .line
 {
 	/*float:left;*/
 	clear:both;
+	margin-top: 10px;
+	padding: 5px 0 5px 0;
+
 }
 
 .optionItem
 {
 	float:left;
+	margin-left: 5px;
+	margin-right: 5px;
 }
 
 #mumFeathertypeDiv
