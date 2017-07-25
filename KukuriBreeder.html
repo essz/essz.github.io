@@ -1973,9 +1973,7 @@
         var phenoStr = "";
 
         genoStr = baseColor[0] + "/";
-        genoStr += baseColor[1];
-
-       
+        genoStr += baseColor[1];       
 
         if(kukuriMarkings.length == 0 && kukuriMarkings[0] == "")
             markingsAr = [];
@@ -2019,8 +2017,20 @@
                 console.log("Checking if " + markingsAr[i] + " matches " + markings[j][1] + " or " + markings[j][2]);
 
                 if(markingsAr[i] == markings[j][1] || markingsAr[i] == markings[j][2]) {
-                     markingsStr += markings[j][0];
-                     markingsStr += ","
+                  
+                     if(markingsAr.length >= 2 && i == markingsAr.length-1)
+                     {
+                        markingsStr += " and ";
+                        markingsStr += markings[j][0];
+                     }
+                     else
+                     {
+                        markingsStr += markings[j][0];
+
+                        if(markingsAr.length >= 2 && i != markingsAr.length-2)               
+                            markingsStr += ", "
+                     }
+
                      break;
                 }                   
             }
