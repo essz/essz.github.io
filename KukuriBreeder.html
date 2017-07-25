@@ -976,21 +976,30 @@
 
         for(var i = 0; i < rules.length; i++) {
 
-            //console.log("Checking if " +  rules[i][0] + " matches " + marking1Dom + " and " + rules[i][1] + " matches " + marking2Dom);
+            console.log("Checking if " +  rules[i][0] + " matches " + marking1Dom + " and " + rules[i][1] + " matches " + marking2Dom);
 
             if ( rules[i][0] == marking1Dom && rules[i][1] == marking2Dom || 
                  rules[i][0] == marking2Dom && rules[i][1] == marking1Dom )
             {
-                 //console.log("Match found! Let's roll!");
+                 console.log("Match found! Let's roll!");
 
                 var roll = RollMe(1, 100);
-                //console.log("MatchFound roll: " + roll);
+                //var roll = 5;
+                console.log("MatchFound roll: " + roll);
 
                 for(var j = 0; j < rules[i][2].length; j++)
                 {
+                    console.log("checking if " + roll + " is bigger or same as " + rules[i][2][j][0] +  " and" + 
+                    "if " + roll + " is smaller or same as " + rules[i][2][j][1]);
+
                     if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
                     {
+                        console.log(" is within roll limits! ");
                         var dom = rules[i][2][j][2]; // UU, nU, --
+
+                        console.log(" dom:  " + dom);
+                        console.log(" marking1Dom:  " + marking1Dom);
+                        console.log(" marking2Dom:  " + marking2Dom);
 
                         if(dom == marking1Dom)
                         {
@@ -1001,7 +1010,25 @@
                         {
                              console.log(marking2);
                              return marking2.toString();
-                        }                            
+                        }      
+                        else if (dom != "--")
+                        {
+                            console.log(" marking1:  " + marking1);
+                            console.log(" marking2:  " + marking2);
+
+                            if(marking1 != "--")
+                            {
+                                return getSameTypeMarking(marking1);
+                            }
+
+                            if(marking2 != "--")
+                            {
+                                return getMarkingIfSameType(marking2);
+                            }
+
+                            console.log("ERROR, dom was not -- but found no vastaMarking");
+                            return undefined;
+                        }                         
                         else
                         {
                             console.log("--");
@@ -1042,6 +1069,34 @@
         }
 
         return false;
+    }
+
+    /** 
+    * Finds the vastaMarking from markings.
+    */
+    function getSameTypeMarking(marking)
+    {
+        var markingOtherType = ""; // Marking's
+
+        for(var m = 0; m < markings.length; m++)
+        {
+            if( (markings[m][1] == marking || markings[m][2] == marking) )
+            {
+                if(marking == markings[m][1]) 
+                {
+                    markingOtherType = markings[m][2];
+                }
+                else if(marking == markings[m][2]) 
+                {
+                    markingOtherType = markings[m][1];
+                }
+
+                return markingOtherType;
+            }
+        }
+
+        console.log("Error! Could not find same type of marking: " + marking);
+        return undefined;
     }
 
     /** 
@@ -1109,6 +1164,8 @@
         //     console.log(mumMarkings[i]);
         // }
 
+        var dadMatchedMarkingsOfSameType = []; // Markings the dad has that are same type as the mum's 
+
         for(var i = 0; i < mumMarkings.length; i++)
         {
             console.log("Checking before: " + mumMarkings[i]);
@@ -1166,14 +1223,84 @@
                 console.log(markingsStr);
 
                 markingsStr += marking + "/";
-
+                dadMatchedMarkingsOfSameType[dadMatchedMarkingsOfSameType.length] = vastaMarking;
 /*
                 index = dadMarkings.indexOf(marking); // Remove found marking of same type    
                 if (index > -1) {
                     dadMarkings.splice(index, 1);
                 }*/
             }
-        }    
+        }
+
+        console.log("DadMarkings length: " + dadMarkings.length);
+
+        for(var i = 0; i < dadMarkings.length; i++)
+        {
+            console.log("Going through dadMarking " + dadMarkings[i]);
+
+            if(contains(dadMatchedMarkingsOfSameType, dadMarkings[i])) // We have already found a matching marking, don't go through it again
+            {
+                console.log("We have checked " + dadMarkings[i] + " already, continuing to next loop");
+                continue;
+            }
+
+            console.log("Checking DAD before: " + dadMarkings[i]);
+
+            console.log(i); 
+            
+            var vastaMarking = getMarkingIfSameType(dadMarkings[i], mumMarkings);
+
+            console.log(i);
+
+            console.log("Checking after: " + dadMarkings[i]);
+
+            var dadMarking = "";
+            dadMarking = dadMarkings[i];
+
+            //var markingRarity = getMarkingRarity(mumMarking);
+
+            var rarities  = ["Common", "Uncommon", "Rare"]; // helper array to help use the number coded rarities
+            var markingRarity = "";
+
+            // Find markings rarity
+            for(var j = 0; j < markings.length; j++)
+            {
+                //console.log("Checking " + markings[j][1] + " and " + markings[j][2] + " " + mumMarking);
+
+                if(markings[j][1] == dadMarkings[i] || markings[j][2] == dadMarkings[i])
+                {
+                    console.log("Marking rarity is " +  rarities[markings[j][3]]);
+                    markingRarity = rarities[markings[j][3]];
+                    break;
+                }
+            }            
+
+            //console.log("Checking: " + mumMarkings[i]);
+
+            var marking = "";
+
+            if(markingRarity == "Common") 
+            { 
+                marking = getMarking(dadMarkings[i], vastaMarking, commonMarkingsRules); 
+            }
+            else if (markingRarity == "Uncommon" ) 
+            { 
+                marking = getMarking(dadMarkings[i], vastaMarking, uncommonMarkingsRules);
+            }
+            else 
+            { 
+                marking = getMarking(dadMarkings[i], vastaMarking, rareMarkingsRules); 
+            }
+
+            console.log("Marking: " + marking);
+
+            if(marking != "--")
+            {
+                console.log(markingsStr);
+
+                markingsStr += marking + "/";
+            }
+        }
 
         if(markingsStr.length > 0)
         {
