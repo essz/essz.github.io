@@ -26,8 +26,16 @@
         <h4>Geno</h4>
     </label>
     
-    <input type="text" id="mumgeno" size="40" class="fullwidth" placeholder="Enter dove's genotype" value="Aa/Ee/PaPa"><br><br>
+    <input type="text" id="mumgeno" size="40" class="fullwidth" placeholder="Enter dove's genotype" value="Aa/Ee/PaPa" onfocusout="onChangeMumGenoFocus()"><br><br>
     <!--textarea rows="2" cols="39" id="mumcheck" class="fullwidth echo" spellcheck="false">Aa</textarea-->
+
+    <div class="line">
+
+        <div class="phenotype">
+            <p id="mumPhenotype">Dove's phenotype will appear here</p>            
+        </div>
+
+    </div>
 
     <div class="line">
 
@@ -132,8 +140,16 @@
         <h4>Geno</h4>
     </label>
     
-    <input type="text" id="dadgeno" size="40" class="fullwidth" placeholder="Enter rook's genotype" value="aa/ee/nPa"><br><br>
+    <input type="text" id="dadgeno" size="40" class="fullwidth" placeholder="Enter rook's genotype" value="aa/ee/nPa" onfocusout="onChangeDadGenoFocus()"><br><br>
     <!--textarea rows="2" cols="39" id="dadCheck" class="fullwidth echo" spellcheck="false">aa</textarea-->
+
+    <div class="line">
+
+        <div class="phenotype">
+            <p id="dadPhenotype">Rook's phenotype will appear here</p>
+        </div>
+
+    </div>
 
     <div class="line">
 
@@ -2046,6 +2062,85 @@
         return phenoStr;
     }
 
+
+
+    function onChangeMumGenoFocus()
+    {
+        var mumgeno = document.getElementById("mumgeno").value;
+        var dadgeno = document.getElementById("dadgeno").value;
+        var mumGenos = mumgeno.split("/");
+        var mumMarkings = getMarkings(mumGenos);
+        console.log(typeof(mumMarkings));
+        console.log("MumMarkings length: " + mumMarkings.length);
+
+        var AaColor =mumGenos[0];
+        var EeColor =mumGenos[1];
+        var XoColor = "";
+
+        if(mumGenos.length > 2)
+        {
+            if(mumGenos[2].toLowerCase() == "xx" || mumGenos[2].toLowerCase() == "oo")
+            {
+                XoColor = mumGenos[2];
+            }
+        }
+
+        var baseColor = [];
+        baseColor[0] = AaColor;
+        baseColor[1] = EeColor;
+        if(XoColor != "" && XoColor != "--")
+            baseColor[2] = XoColor;
+
+        var mumMarkingsStr = "";
+
+        for(var i = 0; i < mumMarkings.length; i++)
+        {
+            mumMarkingsStr += mumMarkings[i]+"/";
+        }
+
+        var phenotype = getPhenotype(baseColor, mumMarkingsStr);
+        document.getElementById("mumPhenotype").innerHTML = phenotype;
+    }
+
+     function onChangeDadGenoFocus()
+    {
+        var dadgeno = document.getElementById("dadgeno").value;
+        var dadGenos = dadgeno.split("/");
+        var dadMarkings = getMarkings(dadGenos);
+
+        var AaColor =dadGenos[0];
+        var EeColor =dadGenos[1];
+        var XoColor = "";
+
+        if(dadGenos.length > 2)
+        {
+            if(dadGenos[2].toLowerCase() == "xx" || dadGenos[2].toLowerCase() == "oo")
+            {
+                XoColor = dadGenos[2];
+            }
+        }
+
+        var baseColor = [];
+        baseColor[0] = AaColor;
+        baseColor[1] = EeColor;
+        if(XoColor != "" && XoColor != "--")
+            baseColor[2] = XoColor;
+
+        var dadMarkingStr = "";
+
+        for(var i = 0; i < dadMarkings.length; i++)
+        {
+            dadMarkingStr += dadMarkings[i]+"/";
+        }
+
+        for(var i = 0; i <baseColor.length; i++)
+        {
+            console.log(baseColor[i]);
+        }
+
+        var phenotype = getPhenotype(baseColor, dadMarkingStr);
+        document.getElementById("dadPhenotype").innerHTML = phenotype;
+    }
 
     function calculateRuffle(ruffle1, ruffle2)
     {
