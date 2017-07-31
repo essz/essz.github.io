@@ -254,7 +254,7 @@
 <p>Nest</p>
         <h4 id="babyName"></h4>
 
-        <p id="logLink"><a href="javascript:ToggleLog()">Log</a></p>
+        <!--p id="logLink"><a href="javascript:ToggleLog()">Log</a></p-->
 
         <textarea rows="8" cols="40" id="rollLog"></textarea>
 </div>
@@ -1537,7 +1537,53 @@
         ]
     ]
 
+     //// RANDOM MUTATION RULES ////
+    var randomMutationRules = [
 
+        [1, 1, // Epic
+            [
+                ["Chimera"]
+            ]
+        ],
+        [2, 50, // Common
+            [
+                ["Heterochromia", "Whiskers"]
+            ]
+        ],
+        [51, 70, // Uncommon
+            [
+                ["Saber", "Tusks", "Albino"]
+            ]
+        ],
+        [75, 90, // Rare
+            [
+               ["Double horns", "Sphynx"]
+            ]
+        ],        
+        [91, 100, // Flawed
+            [
+                ["Hornless"],
+                ["Blind/Deaf"],
+                ["Miniature"],
+                ["Scales"]
+            ]
+        ]
+    ]
+
+    function getRandomMutation()
+    {
+        var roll =RollMe(1,10);
+        logRoll("Random mutation 1-10 roll: (1=pass) " + roll);
+
+        if(roll == 1)
+        {
+            var randomMutRoll =RollMe(1,100);
+            logRoll("Random mutation passes, rarity roll: " + randomMutRoll);
+
+
+
+        }
+    }
 
     function getNestSize(mumRank, dadRank)
     {
