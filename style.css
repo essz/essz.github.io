@@ -89,3 +89,13 @@ h3
 	display: none;
 }
 
+#logLink
+{
+	float:right;
+}
+
+#rollLog
+{
+	display: none;
+}
+
