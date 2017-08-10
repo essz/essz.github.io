@@ -305,12 +305,6 @@
     
     var ranks = ["None", "Known", "Zeta+", "Arisen"];
     var breeds = ["Common", "Prairie"];
-    var featherTypes = [
-        ["Regular", "Common"],
-        ["Dynasty", "Uncommon"],
-        ["Emperor", "Rare"],
-        ["Petal", "Rare"]
-    ]
     var biorythmns = ["Diurnal", "Crepuscular", "Nocturnal"];
     var diets = ["Herbivore", "Omnivore", "Carnivore"];
 
@@ -523,7 +517,7 @@
         ["Shadow", "SwSw", "nSw", 0],
         ["Skunk", "SkSk", "nSk", 0],
         ["Smoke", "SmSm", "nSm", 0],
-        ["Socks", "SoSo", "NSo", 0], // <-- typo?
+        ["Socks", "SoSo", "nSo", 0],
         ["Tailwind", "TwTw", "nTw", 0],
         ["Underbelly", "UU", "nU", 0],
         ["Viper", "VrVr", "nVr", 0],
@@ -701,7 +695,7 @@
         ["Short",   0],
         ["Devil",   0],
         ["Rhino",   0],
-        ["Kirln",   0],
+        ["Kirin",   0],
         ["Para",    0],
         ["Curved",  0],
 
@@ -710,7 +704,7 @@
         ["Deer",    1],
         ["Dragonic",1],
 
-        ["Bristte", 2],
+        ["Bristle", 2],
         ["Fin",     2],
         ["Moose",   2],
         ["Unicorn", 2],
@@ -774,27 +768,59 @@
         ["Papillon",   2]
     ];
 
-    /*
-    var AaRules = [];
+    ////// FEATHERTYPES //////
 
-    AaRules.push(new Rule("Aa", "aa", 
-     [            
-        [
-            [40, "Aa"],
-            [100, "aa"]
-        ]            
-    ] ));
+    var featherTypes = [
+        ["Regular", "Common"],
+        ["Dynasty", "Uncommon"],
+        ["Emperor", "Rare"],
+        ["Petal", "Rare"]
+    ]
 
-    var rule = {
-        parent1gene: "Aa",
-        parent2gene: "aa",
-        rolls = [            
+    /**
+        C x UC = 1-65 common, 66-100 uncommon
+        C x R = 1-90 common, 91-100 rare
+        UC x R = 1-80 uncommon, 81-100 rare
+    */
+
+    var feathertypesRules =  [
+
+        ["Common", "Common",
             [
-                [40, "Aa"],
-                [100, "aa"]
-            ]            
+                [1, 100, "Common"]
+            ]   
+        ],
+        ["Uncommon", "Uncommon",
+            [
+                [1, 100, "Uncommon"]
+            ]   
+        ],
+        ["Rare", "Rare",
+            [
+                [1, 100, "Rare"]
+            ]   
+        ],
+        ["Common", "Uncommon", //C x UC = 1-65 common, 66-100 uncommon
+            [
+                [1, 65, "Common"],
+                [66, 100, "Uncommon"]
+            ]   
+        ],
+        ["Common", "Rare", //C x R = 1-90 common, 91-100 rare
+            [
+                [1, 90, "Common"],
+                [91, 100, "Rare"]
+            ]   
+        ],
+        ["Uncommon", "Rare", //UC x R = 1-80 uncommon, 81-100 rare
+            [
+                [1, 80, "Uncommon"],
+                [81, 100, "Rare"]
+            ]
         ]
-    } */
+    ];
+
+
 
     var commonMarkingsRules =  [
 
@@ -1406,8 +1432,67 @@
         return XoColor;
     }
 
-    function calculateFeathertype()
+    function getFeathertypeRarity(feathertype)
     {
+        console.log("Get feathertype rarity! " + feathertype);
+
+        for(var i = 0; i < featherTypes.length; i++)
+        {
+            console.log("Checking: " + featherTypes[i][0]);
+
+            if(feathertype == featherTypes[i][0])
+                return featherTypes[i][1];
+        }
+    }
+
+    function calculateFeathertype(mumFeathertype, dadFeathertype, rules)
+    {
+        console.log("Calculate feather type!");
+
+        console.log(mumFeathertype);
+        console.log(dadFeathertype);
+
+        var mumFeathertypeRarity = getFeathertypeRarity(mumFeathertype);
+        var dadFeathertypeRarity = getFeathertypeRarity(dadFeathertype);
+
+        console.log("mumFeathertypeRarity: " + mumFeathertypeRarity);
+        console.log("dadFeathertypeRarity: " + dadFeathertypeRarity);
+
+        for(var i = 0; i < rules.length; i++)
+        {
+            if((rules[i][0] == mumFeathertypeRarity && rules[i][1] == dadFeathertypeRarity) || (rules[i][0] == dadFeathertypeRarity && rules[i][1] == mumFeathertypeRarity))
+            {
+                var roll = RollMe(1, 100);
+                logRoll("Feathertype roll: " + roll);
+
+                for(j = 0; j < rules[i][2].length; j++)
+                {
+                    if(roll >= rules[i][2][j][0] && roll <= rules[i][2][j][1]) // if roll is within the written roll limits
+                    {
+                        var rarity = rules[i][2][j][2]; // Uncommon, Rare.. etc
+
+                        if(mumFeathertypeRarity == dadFeathertypeRarity)
+                        {
+                            var sameRarityRoll = RollMe(1, 2);
+                            logRoll("Feathertypes are the same rarity. Rolling which parent we choose for feathertype (1= mum, 2= dad): " + sameRarityRoll);
+
+                            if(sameRarityRoll == 1)
+                                return mumFeathertype;
+                            else
+                                return dadFeathertype;
+                        }
+
+                        if(rarity == mumFeathertypeRarity)
+                            return mumFeathertype;
+                        else 
+                            return dadFeathertype;
+                    } 
+                }
+
+                break;
+            }
+        }
+
 
     }
 
@@ -1799,14 +1884,23 @@
 
         var str;
 
+        var feathertypeStr = "";
+
+        if(breed == "Prairie")
+        {
+            feathertypeStr = "Feathertype: " + calculateFeathertype(featherTypes[document.getElementById("mumFeathertype").value][0], 
+            featherTypes[document.getElementById("dadFeathertype").value][0], feathertypesRules) + " </br>";
+        }
+
         str = breed + " Kukuri - " + gender + "<br/>"
-                + AaColor + "/" + EeColor + "/" + XoColorStr + babyMarkings + "<br/>"
-                + ears + " Ears," + horns + " Horns" + "<br/>"
+                + AaColor + "/" + EeColor + "/" + XoColorStr + babyMarkings + "<br/>"                
                 + phenotype + "</br>"
+                + ears + " Ears, " + horns + " Horns" + "<br/>"
+                + feathertypeStr
                 + tailStr + " " + ruffleStr
                 + skillPointsStr
-                + bioryhtmnStr + "</br>"
-                + dietStr + "</br>";
+                + dietStr + "</br>"
+                + bioryhtmnStr + "</br>";
 
         return str;
     }
@@ -1839,6 +1933,11 @@
         var mumRefuse = refuses(mumRank, dadRank);
         logRoll("Rolling dad accept breeding...");
         var dadRefuse = refuses(dadRank, mumRank);
+
+        if(mumRefuse && dadRefuse)
+        {
+            return "Both kukuris refused breeding due to the partner's low rank, resulting in an empty nest.";    
+        }
 
         if(mumRefuse)
         {
@@ -2415,24 +2514,6 @@
 
         populate(document.breeder.mumFeathertype, featherTypes);
         populate(document.breeder.dadFeathertype, featherTypes);
-
-
-
-
-
-
-/*
-        var sel = document.breeder.mumEars; // or document.getElementsByName["req_one"[0];
-        if (sel) {
-
-            for(i = 0; i < ears.length; i++)
-            {
-                sel.options[i] =new Option(ears[i][0], i);
-            }       
-        }
-        else {
-            alert("Could not populate ears!");
-        }*/
 
     };
 
