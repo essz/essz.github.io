@@ -1915,6 +1915,16 @@
         var mumgeno = document.getElementById("mumgeno").value;
         var dadgeno = document.getElementById("dadgeno").value;
 
+        if(mumgeno.slice(-1) == "/")
+        {
+            mumgeno = mumgeno.substring(0, mumgeno.length - 1);
+        }
+
+        if(dadgeno.slice(-1) == "/")
+        {
+            dadgeno = dadgeno.substring(0, dadgeno.length - 1);
+        }
+
         var mumGenos = mumgeno.split("/");
         var dadGenos = dadgeno.split("/");
 
