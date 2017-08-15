@@ -130,6 +130,13 @@
 
     </div>
 
+    <div class="line">
+
+        <label for="mumStarter"><h4>Starter</h4></label>
+        <input type="checkbox" id="mumStarter" name="mumStarter" value="false"><br/>
+
+    </div>
+
 </div>
 
 <div class="section">
@@ -242,6 +249,13 @@
             <select id="dadBiorythmn" name="dadBiorythmn">
             </select>
         </div>
+
+    </div>
+
+    <div class="line">
+
+        <label for="dadStarter"><h4>Starter</h4></label>
+        <input type="checkbox" id="dadStarter" name="dadStarter" value="false"><br/>
 
     </div>
 
@@ -1512,6 +1526,13 @@
 
     function refuses(myRank, otherRank)
     {
+        if(document.getElementById('mumStarter').checked || document.getElementById('dadStarter').checked)
+        {
+            logRoll("At least one parent is a starter. Do not refuse mating.");
+
+            return false;
+        }     
+
         if(myRank == "Arisen" || otherRank == "Arisen")
         {
             return false;
@@ -1672,7 +1693,14 @@
 
     function getNestSize(mumRank, dadRank)
     {
-        var nestSize = 0;      
+        var nestSize = 0; 
+
+        if(document.getElementById('mumStarter').checked || document.getElementById('dadStarter').checked)
+        {
+            logRoll("At least one parent is a starter. Nest size 2 eggs.");
+
+            return 2;
+        }     
 
         if(mumRank == "Arisen" || dadRank == "Arisen")
         {
