@@ -1648,47 +1648,171 @@
 
         [1, 1, // Epic
             [
-                ["Chimera"]
+                ["Chimera", 
+                    [
+                        ["none", 0]
+                    ]
+                ],
+                 ["Feikki", 
+                    [
+                        ["none", 0]
+                    ]
+                ]
             ]
         ],
         [2, 50, // Common
             [
-                ["Heterochromia", "Whiskers"]
+                ["Heterochromia", 
+                    [
+                        ["none", 0]]
+                    ],
+                ["Whiskers",
+                    [
+                        ["none", 0]
+                    ]
+                ]
             ]
         ],
         [51, 70, // Uncommon
             [
-                ["Saber", "Tusks", "Albino"]
+                ["Saber", 
+                    [
+                        ["ATK", 1]
+                    ]
+                ],
+                ["Tusks", 
+                    [
+                        ["ATK", 1]
+                    ]
+                ],
+                ["Albino", 
+                    [
+                        ["none", 0]
+                    ]
+                ]
             ]
         ],
         [75, 90, // Rare
             [
-               ["Double horns", "Sphynx"]
+               ["Double horns", 
+                    [
+                        ["none", 0]
+                    ]
+                ],
+               ["Sphynx",
+                    [
+                        ["DEF", -1]
+                    ]
+                ]
             ]
         ],        
         [91, 100, // Flawed
             [
-                ["Hornless"],
-                ["Blind/Deaf"],
-                ["Miniature"],
-                ["Scales"]
+                ["Hornless", [
+                        ["none", 0]
+                    ]],
+                ["Blind/Deaf", 
+                    [
+                        ["RANDOM", -1],
+                        ["RANDOM", -1]
+                    ]
+                ],
+                ["Miniature", [
+                        ["none", 0]
+                    ]],
+                ["Scales", [
+                        ["none", 0]
+                    ]]
             ]
         ]
     ]
 
     function getRandomMutation()
     {
+        console.log("GET RANDOM MUTATION");
+
         var roll =RollMe(1,10);
+        //var roll = 1;
         logRoll("Random mutation 1-10 roll: (1=pass) " + roll);
 
         if(roll == 1)
         {
             var randomMutRoll =RollMe(1,100);
+            //var randomMutRoll = 91;
+            console.log("Random mutation passes, rarity roll: " + randomMutRoll);
             logRoll("Random mutation passes, rarity roll: " + randomMutRoll);
 
-
-
+            for(var i = 0; i < randomMutationRules.length; i++)
+            {
+                if(randomMutRoll >= randomMutationRules[i][0] && randomMutRoll <= randomMutationRules[i][1])
+                {
+                    var numberRoll = RollMe(0, randomMutationRules[i][2].length-1);
+                    //var numberRoll = 1;
+                    console.log("Which mutation roll " + numberRoll);
+                    logRoll("Which mutation roll: " + numberRoll);
+                    console.log(randomMutationRules[i][2][numberRoll][0]);
+                    return randomMutationRules[i][2][numberRoll][0];
+                }
+            }
         }
+
+        return "";
+    }
+
+    function getMutationSkillPointEffect(mutation)
+    {
+        var skillPointEffects = [0, 0, 0]; // ATK, DEF, SPD
+
+        console.log(randomMutationRules[0]);
+        console.log(randomMutationRules[0][2]);
+        console.log(randomMutationRules[0][2][0]);
+        console.log(randomMutationRules[0][2][0][0]);
+
+        for(var i = 0; i < randomMutationRules.length; i++) // Go through each mutation type
+        {
+            console.log("randomMutationRules.length: " + randomMutationRules.length);
+            console.log("randomMutationRules[i].length: " + randomMutationRules[i].length);
+
+            for(var j = 0; j < randomMutationRules[i][2].length; j++) // Go through each mutation
+            {
+                console.log("i: " + i + " j: " + j)
+                console.log("What is this i " + randomMutationRules[i]);
+                console.log("What is this i and j " + randomMutationRules[i][2][j]);
+                console.log("Checking if " + randomMutationRules[i][2][j][0] + " matches " + mutation);
+                console.log("whuuppiduu");
+
+                console.log(randomMutationRules[i][2][j]);
+
+                if(randomMutationRules[i][2][j][0] == mutation)
+                {
+                    console.log("match found");
+
+                    for(var k = 0; k < randomMutationRules[i][2][j][1].length; k++) // Go through mutation's skill points
+                    {
+                        console.log("Checking if " + randomMutationRules[i][2][j][1][k][0] + " is ATK");
+
+                        if(randomMutationRules[i][2][j][1][k][0] == "ATK")
+                        {
+                            skillPointEffects[0] += randomMutationRules[i][2][j][1][k][1];
+                        }
+                        else if(randomMutationRules[i][2][j][1][k][0] == "DEF")
+                        {
+                            skillPointEffects[1] += randomMutationRules[i][2][j][1][k][1];
+                        }
+                        else if(randomMutationRules[i][2][j][1][k][0] == "RANDOM")
+                        {
+                           skillPointEffects[RollMe(0,2)] += randomMutationRules[i][2][j][1][k][1];
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        console.log("returninggg");
+
+        return skillPointEffects;
     }
 
     function getNestSize(mumRank, dadRank)
@@ -1884,6 +2008,13 @@
         }
 
         var skillPointsStr = "";
+        var mutationStr = getRandomMutation();
+
+        var skillPointsEffects = getMutationSkillPointEffect(mutationStr); // TODO change to array of mutations
+
+        babyAtk += skillPointsEffects[0];
+        babyDef += skillPointsEffects[1];
+        babySpd += skillPointsEffects[2];
 
         if(babyAtk != 0)
         {
@@ -1928,7 +2059,8 @@
                 + tailStr + " " + ruffleStr
                 + skillPointsStr
                 + dietStr + "</br>"
-                + bioryhtmnStr + "</br>";
+                + bioryhtmnStr + "</br>"
+                + mutationStr;
 
         return str;
     }
