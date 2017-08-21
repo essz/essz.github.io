@@ -1510,20 +1510,6 @@
 
     }
 
-    function isValidBaseColor(baseColor)
-    {
-        for(var i = 0; i < baseColors.length; i++)
-        {
-            if(baseColors[i][0] == baseColor)
-                return true;
-        }
-
-        logRoll(baseColor + " is not a valid base color! Rerolling.");
-        console.log(baseColor + " is not valid base color!");
-
-        return false;
-    }
-
     function refuses(myRank, otherRank)
     {
         if(document.getElementById('mumStarter').checked || document.getElementById('dadStarter').checked)
@@ -2366,20 +2352,67 @@
         }
     }
 
-    var baseColors = 
+     var baseColors = 
     [
-        ["Aa/ee", "Crimson"],
-        ["aa/Ee", "Hazel"],
-        ["aa/ee/Xx", "Raven"],
-        ["aa/ee/Oo", "Pearl"],
-        ["Aa/Ee", "Amber"],
-        ["Aa/ee/Oo", "Velvet Crimson"],
-        ["Aa/ee/Oo", "Velvet Hazel"],
-        ["Aa/ee/Xx", "Ebon Crimson"],
-        ["aa/Ee/Xx", "Ebon Hazel"],
-        ["Aa/Ee/Xx", "Azure"],
-        ["Aa/Ee/Oo", "Jade"]
+        ["Crimson", 
+            [
+                "Aa/ee", "AA/ee"
+            ],
+            [
+                ["Velvet Crimson", ["Oo", "OO"]],
+                ["Ebon Crimson", ["Xx", "XX"]]
+            ]
+        ],
+        ["Hazel",
+            [
+                "aa/Ee", "aa/EE"
+            ],
+            [
+                ["Velvet Hazel", ["Oo", "OO"]],
+                ["Ebon Hazel", ["Xx", "XX"]]
+            ]
+        ],
+        ["Raven",
+            [
+                "aa/ee/Xx",  "aa/ee/XX"
+            ]
+        ],
+        ["Pearl",
+            [
+                "aa/ee/Oo",  "aa/ee/OO"
+            ]
+        ],
+        ["Amber",
+            [
+                "Aa/Ee", "AA/Ee", "Aa/EE", "AA/EE"
+            ],
+            [
+                ["Jade", ["Oo", "OO"]],
+                ["Azure", ["Xx", "XX"]]
+            ]
+        ]
     ]
+
+    function isValidBaseColor(baseColor)
+    {
+        console.log(baseColors.length);
+
+        for(var i = 0; i < baseColors.length; i++)
+        {
+            for(var j = 0; j < baseColors[i][1].length; j++)
+            {
+                console.log("Checking if " + baseColors[i][1][j] + " is " + baseColor); // TODO add XX and OO and stuff
+
+                if(baseColors[i][1][j] == baseColor)
+                    return true;
+            }
+        }
+
+        logRoll(baseColor + " is not a valid base color! Rerolling.");
+        console.log(baseColor + " is not valid base color!");
+
+        return false;
+    }
 
     function getPhenotype(baseColor, kukuriMarkings)
     {
@@ -2401,13 +2434,41 @@
         console.log(genoStr);
 
         var baseColorStr = "";
+
+        console.log(baseColors.length);
+        var found = false;
+
         for(var i = 0; i < baseColors.length; i++)
         {
-            if(baseColors[i][0] == genoStr)
+            console.log(baseColors[i]);
+
+            for(var j = 0; j < baseColors[i][1].length; j++) // 
             {
-                phenoStr = baseColors[i][1];
-                break;
-            }               
+                console.log(baseColors[i][1][j]); // Basic color, Aa/Ee etc.
+
+                if(baseColors[i][1][j] == genoStr)
+                {
+                     phenoStr = baseColors[i][0];
+                     break;
+                }
+
+                if(baseColors[i].length > 2)
+                {
+                    for(var k = 0; k < baseColors[i][2].length; k++)
+                    {
+                        for(var m = 0; m < baseColors[i][2][k][1].length; m++)
+                        {
+                            var fullGeno = baseColors[i][1][j] + "/" + baseColors[i][2][k][1][m];
+
+                            if(genoStr == fullGeno)
+                            {
+                                phenoStr = baseColors[i][2][k][0];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if(kukuriMarkings == "") // No markings
