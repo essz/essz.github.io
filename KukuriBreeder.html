@@ -131,6 +131,11 @@
     </div>
 
     <div class="line">
+        <label for="mumMutations"><h4>Mutations</h4></label>
+        <select id="mumMutations" multiple="multiple" name="mumMutations" />
+    </div>
+
+    <div class="line">
 
         <label for="mumStarter"><h4>Starter</h4></label>
         <input type="checkbox" id="mumStarter" name="mumStarter" value="false"><br/>
@@ -253,22 +258,33 @@
     </div>
 
     <div class="line">
+         <div class="optionItem">
+            <label for="dadMutations"><h4>Mutations</h4></label>
+            <select id="dadMutations" multiple="multiple" name="dadMutations" />
+        </div>
+     </div>
 
-        <label for="dadStarter"><h4>Starter</h4></label>
-        <input type="checkbox" id="dadStarter" name="dadStarter" value="false"><br/>
-
+     <div class="line">
+          <div class="optionItem">
+            <label for="dadStarter"><h4>Starter</h4></label>
+            <input type="checkbox" id="dadStarter" name="dadStarter" value="false"><br/>
+         </div>
     </div>
 
 </div>
 
 <div class="section">
 
+    <div class="rollTop">
+         <input type="checkbox" id="inbred" name="inbred" value="Inbred" />Inbred <br />
+    </div>
+
 <button type="button" onclick='document.getElementById("babyName").innerHTML = breed()'>Roll!</button>
 
 <p>Nest</p>
         <h4 id="babyName"></h4>
 
-        <!--p id="logLink"><a href="javascript:ToggleLog()">Log</a></p-->
+        <p id="logLink"><a href="javascript:ToggleLog()">Log</a></p>
 
         <textarea rows="8" cols="40" id="rollLog"></textarea>
 </div>
@@ -1510,41 +1526,70 @@
 
     }
 
-    function refuses(myRank, otherRank)
+    function accepts(myRank, otherRank, myMutations, otherMutations, gender, otherGender)
     {
-        if(document.getElementById('mumStarter').checked || document.getElementById('dadStarter').checked)
+        var result = [false, "Mating was not successful for an unknown reason."];
+
+        //Due to the rook’s low rank, the dove refused to mate with them, resulting in an empty nest.
+
+        if(contains(myMutations, "Double horns") || contains(otherMutations, "Double horns"))
+        {
+            logRoll("Parent has double horns. Accept mating.")
+            result = [true, ""];
+        }
+        else if(contains(otherMutations, "Hornless"))
+        {
+            var roll = RollMe(1,2);
+            logRoll("Roll refuse mating due to Hornless mutation (1-2 (1 accepts)): " + roll)
+            if(roll == 1)
+            {
+                result = [true, ""];
+            }
+            else
+                result = [false, "Due to the " + otherGender + " is Hornless, the " + gender + " refused to mate with them, resulting in an empty nest."];
+        }
+        else if(contains(myMutations, "Miniature"))
+        {
+            if(!contains(otherMutations, "Miniature"))
+            {
+                 result = [false, "Due to the " + otherGender + " is not a Miniature as the " + gender + " is, " 
+                 + "the " + gender + " refused to mate with them, resulting in an empty nest."];
+            }
+        }
+        else if(document.getElementById('mumStarter').checked || document.getElementById('dadStarter').checked)
         {
             logRoll("At least one parent is a starter. Do not refuse mating.");
 
-            return false;
-        }     
-
-        if(myRank == "Arisen" || otherRank == "Arisen")
+            result = [true, ""];
+        }
+        else if(myRank == "Arisen" || otherRank == "Arisen")
         {
-            return false;
+            result = [true, ""];
         }
         else if(myRank == "Zeta+")         
         {
             if(otherRank == "Zeta+" || otherRank == "Arisen")
             {
-                 return false;
+                 result = [true, ""];
             }
             else 
-                return true;           
+                result = [false, "Refuse mating, rank too low for Zeta+."];       
         }
         else if(otherRank == "None")
         {
             var roll = RollMe(1,10);
-            logRoll("Roll refuse mating: " + roll);
+            logRoll("Roll refuse mating due to None rank (1-10 (1 refuses)): " + roll);
             if(roll == 1)
             {
-                return true;
+                 result = [false, "Due to the mate's low rank, " + gender + " refused mating with the " + otherGender + "."];
             }
-
-            return false;
+            else
+            {
+                 result = [true, ""];
+            }           
         }
 
-        return false;
+        return result;
     }
 
     //// BIORYTHMN RULES ////
@@ -1638,11 +1683,6 @@
                     [
                         ["none", 0]
                     ]
-                ],
-                 ["Feikki", 
-                    [
-                        ["none", 0]
-                    ]
                 ]
             ]
         ],
@@ -1713,6 +1753,76 @@
         ]
     ]
 
+    // INBRED MUTATION RULES
+     var inbredMutationRules = [
+
+        ["Crippled", 
+            [
+                ["ATK", -1],
+                ["DEF", -1],
+                ["SPD", -1]
+            ]
+        ],
+        ["Eyeless",
+            [
+                ["RANDOM", -1],
+                ["RANDOM", -1]
+            ]
+        ],
+        ["Amputated",
+            [
+                ["SPD", -2]
+            ]
+        ],
+        ["Spider",
+            [
+                 ["none", 0]
+            ]
+        ],        
+        ["Orthrus",
+            [
+                ["ATK", +1],
+                ["SPD", -1]
+            ]
+        ]
+    ]
+
+    function getInbredMutation()
+    {
+        console.log("GET INBRED MUTATION");
+
+        var roll =RollMe(0, inbredMutationRules.length-1);
+        //var roll = 1;
+        logRoll("Inbred mutation 1-" + inbredMutationRules.length-1 + " roll: " + roll);
+
+        return inbredMutationRules[roll][0];
+    }
+
+    function getFlawedOrInbredMutation()
+    {
+        console.log("GET FLAWED OR INBRED MUTATION");
+
+        var totalFlawed = randomMutationRules[4].length;
+        var totalInbred = inbredMutationRules.length;
+
+        var total = totalFlawed+totalInbred;
+
+        var roll = RollMe(0, total-1);
+
+        console.log("Flawed or inbred mutation roll: " + roll);
+
+        if(roll < randomMutationRules[4].length)
+        {
+            console.log("Returning " + randomMutationRules[4][2][roll][0]);
+            return randomMutationRules[4][2][roll][0];
+        }
+        else
+        {
+            console.log("Returning " + inbredMutationRules[total-1-roll][0]);
+            return inbredMutationRules[total-1-roll][0];
+        }
+    }
+
     function getRandomMutation()
     {
         console.log("GET RANDOM MUTATION");
@@ -1749,26 +1859,13 @@
     {
         var skillPointEffects = [0, 0, 0]; // ATK, DEF, SPD
 
-        console.log(randomMutationRules[0]);
-        console.log(randomMutationRules[0][2]);
-        console.log(randomMutationRules[0][2][0]);
-        console.log(randomMutationRules[0][2][0][0]);
-
-        for(var i = 0; i < randomMutationRules.length; i++) // Go through each mutation type
+        for(var i = 0; i < randomMutationRules.length; i++) // Go through each random mutation type
         {
             console.log("randomMutationRules.length: " + randomMutationRules.length);
             console.log("randomMutationRules[i].length: " + randomMutationRules[i].length);
 
             for(var j = 0; j < randomMutationRules[i][2].length; j++) // Go through each mutation
             {
-                console.log("i: " + i + " j: " + j)
-                console.log("What is this i " + randomMutationRules[i]);
-                console.log("What is this i and j " + randomMutationRules[i][2][j]);
-                console.log("Checking if " + randomMutationRules[i][2][j][0] + " matches " + mutation);
-                console.log("whuuppiduu");
-
-                console.log(randomMutationRules[i][2][j]);
-
                 if(randomMutationRules[i][2][j][0] == mutation)
                 {
                     console.log("match found");
@@ -1796,12 +1893,44 @@
             }
         }
 
+        for(var i = 0; i < inbredMutationRules.length; i++) // Go through each inbred mutation
+        {
+            console.log("inbredMutationRules.length: " + inbredMutationRules.length);
+            console.log("inbredMutationRules[i].length: " + inbredMutationRules[i].length);
+
+            if(inbredMutationRules[i][0] == mutation)
+            {
+                console.log("match found");
+
+                for(var k = 0; k < inbredMutationRules[i][1].length; k++) // Go through mutation's skill points
+                {
+                    console.log("Checking if " + inbredMutationRules[i][1][k][0] + " is ATK");
+
+                    if(inbredMutationRules[i][1][k][0] == "ATK")
+                    {
+                        skillPointEffects[0] += inbredMutationRules[i][1][k][1];
+                    }
+                    else if(inbredMutationRules[i][1][k][0] == "DEF")
+                    {
+                        skillPointEffects[1] += inbredMutationRules[i][1][k][1];
+                    }
+                    else if(inbredMutationRules[i][1][k][0] == "RANDOM")
+                    {
+                        skillPointEffects[RollMe(0,2)] += inbredMutationRules[i][1][k][1];
+                    }
+                }
+
+                break;
+            }
+        }
+
+
         console.log("returninggg");
 
         return skillPointEffects;
     }
 
-    function getNestSize(mumRank, dadRank)
+    function getNestSize(mumRank, dadRank, mumMutations, dadMutations)
     {
         var nestSize = 0; 
 
@@ -1810,16 +1939,25 @@
             logRoll("At least one parent is a starter. Nest size 2 eggs.");
 
             return 2;
-        }     
+        }
 
         if(mumRank == "Arisen" || dadRank == "Arisen")
         {
             var roll = RollMe(1,3);
 
             logRoll("Nest size roll: " + roll);
-            var extraEggRoll = RollMe(1,10);
+            var extraEggRoll = 0;
 
-            logRoll("Extra egg roll: " + extraEggRoll);
+            if(contains(mumMutations, "Double horns") || contains(dadMutations, "Double horns"))
+            {
+                extraEggRoll = RollMe(1,5);
+                logRoll("Extra egg roll (double horns 1-5): " + extraEggRoll);
+            }
+            else
+            {
+                var extraEggRoll = RollMe(1,10);
+                logRoll("Extra egg roll (1-10): " + extraEggRoll);
+            }
 
             if(extraEggRoll == 1)
             {
@@ -1827,7 +1965,7 @@
                 console.log("Extra egg added to the nest!")
             }
 
-            nestSize = roll;       
+            nestSize = roll;
         }
         else if(mumRank == "Zeta+") // We know from conditions that dad has same or higher     
         {
@@ -1840,6 +1978,30 @@
             var roll = RollMe(0,3);
             logRoll("Nest size roll: " + roll);
             nestSize = roll;
+        }
+
+        if(contains(mumMutations, "Miniature") && contains(dadMutations, "Miniature"))
+        {
+            var roll = RollMe(1,4);
+            logRoll("Miniature x Miniature 25% chance of 2 eggs: ")
+        }
+
+        if(contains(mumMutations, "Hornless") || contains(dadMutations, "Hornless"))
+        {
+            if(nestSize > 2)
+            {
+                logRoll("Parent has mutation Hornless, reduce nestSize to 2 from " + nestSize);
+                nestSize = 2;
+            }                
+        }
+        
+        if(contains(mumMutations, "Miniature") && contains(dadMutations, "Miniature"))
+        {
+            var roll = RollMe(1,4);
+            logRoll("Miniature x Miniature 25% chance of 2 eggs: (1-4, 1 pass): " + roll);
+
+            if(roll == 1)
+                nestSize = 2;
         }
 
         return nestSize;
@@ -1867,6 +2029,80 @@
         }
 
        return skillPoints;
+    }
+
+    function hasDuplicates(ar)
+    {
+        for(var i = 0; i < ar.length; i++)
+        {
+            for(var j = 0; j < ar.length; j++)
+            {
+                if(i != j && ar[i] == ar[j])
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Get a guaranteed unique mutation that does not exist in the array
+    function getUniqueFlawedOrInbredMutation(ar)
+    {
+        var mutation = getFlawedOrInbredMutation();
+
+        if(contains(ar, mutation))
+        {
+            return getUniqueFlawedOrInbredMutation(ar);
+        }
+        else
+        {
+            return getU
+        }
+    }
+
+    function getMutations()
+    {
+        var mutations = [];
+        var mutationStr = getRandomMutation();
+
+        if(mutationStr != "")
+        {
+            mutations[0] = mutationStr;
+        }
+
+        if(document.getElementById('inbred').checked)
+        {
+            var inbredMutation = getInbredMutation();
+            mutations[mutations.length] = inbredMutation;
+
+            for(var i = 0; i < 100; i++)
+            {
+                var mut = getFlawedOrInbredMutation();
+                if(!contains(mutations, mut))
+                {
+                    mutations[mutations.length] = mut;
+                    break;
+                }                
+            }
+
+            // Extra roll 15%.
+            var roll = RollMe(1,100);
+            logRoll("Rolling for extra mutation for inbred (1-100)" + roll);
+            if(roll <= 15)
+            {
+                for(var i = 0; i < 100; i++)
+                {
+                    var mut = getFlawedOrInbredMutation();
+                    if(!contains(mutations, mut))
+                    {
+                        mutations[mutations.length] = mut;
+                        break;
+                    }                
+                }
+            }
+        }
+
+        return mutations;
     }
 
     function createEgg(mumGenos, dadGenos, mumMarkings, dadMarkings, mumBreed, dadBreed, mumRank, dadRank)
@@ -1994,13 +2230,17 @@
         }
 
         var skillPointsStr = "";
-        var mutationStr = getRandomMutation();
 
-        var skillPointsEffects = getMutationSkillPointEffect(mutationStr); // TODO change to array of mutations
+        var mutations = getMutations();
 
-        babyAtk += skillPointsEffects[0];
-        babyDef += skillPointsEffects[1];
-        babySpd += skillPointsEffects[2];
+        for(var i = 0; i < mutations.length; i++)
+        {
+            var skillPointsEffects = getMutationSkillPointEffect(mutations[i]);
+
+            babyAtk += skillPointsEffects[0];
+            babyDef += skillPointsEffects[1];
+            babySpd += skillPointsEffects[2];
+        }
 
         if(babyAtk != 0)
         {
@@ -2031,6 +2271,36 @@
 
         var feathertypeStr = "";
 
+        mutationStr = "";
+
+        for(var i = 0; i < mutations.length; i++)
+        {
+            mutationStr += mutations[i];
+
+            if(i != mutations.length-1)
+                mutationStr += "</br>"
+        }
+
+        var deadStr = "";
+        var infertileStr = "";
+
+        if(document.getElementById('inbred').checked)
+        {
+            var roll = RollMe(1,100);
+            logRoll("Inbred dead roll (1-100): " + roll);
+            if(roll <= 30)
+            {
+                deadStr = "</br>DEAD";
+            }
+
+            roll = RollMe(1,100);
+            logRoll("Inbred infertile roll (1-100): " + roll);
+            if(roll <= 80)
+            {
+                infertileStr = "</br>Infertile";
+            }
+        }        
+
         if(breed == "Prairie")
         {
             feathertypeStr = "Feathertype: " + calculateFeathertype(featherTypes[document.getElementById("mumFeathertype").value][0], 
@@ -2046,9 +2316,44 @@
                 + skillPointsStr
                 + dietStr + "</br>"
                 + bioryhtmnStr + "</br>"
-                + mutationStr;
+                + mutationStr
+                + deadStr
+                + infertileStr + "</br>";
 
         return str;
+    }
+
+    function hasMutation(mutation, parent)
+    {
+        if(parent == "mum")
+        {
+            var mumMut = document.getElementById("mumMutations");            
+
+            for(var i = 0; i < mumMut.options.length; i++) {
+
+                if(mumMut.options[i].selected)
+                {
+                    if(mutation == mumMut.options[i].value)
+                        return true;
+                }
+            }
+        }
+        else
+        {
+            var dadMut = document.getElementById("dadMutations");
+
+            for(var i = 0; i < dadMut.options.length; i++)
+            {
+                if(dadMut.options[i].selected)
+                {
+                    if(mutation == dadMut.options[i].value)
+                        return true;
+                }
+            }
+
+        }
+
+        return false;
     }
 
     function breed()
@@ -2085,27 +2390,50 @@
         var mumRank = ranks[document.getElementById("mumRank").value];
         var dadRank = ranks[document.getElementById("dadRank").value];
 
+        var mumMutations = [];
+        var dadMutations = [];
+
+        var mumMut = document.getElementById("mumMutations");
+        var dadMut = document.getElementById("dadMutations");
+
+        for(var i = 0; i < mumMut.options.length; i++)
+        {
+            if(mumMut.options[i].selected)
+            {
+                mumMutations[mumMutations.length] = mumMut.options[i].value;
+            }
+        }
+
+        for(var i = 0; i < dadMut.options.length; i++)
+        {
+            if(dadMut.options[i].selected)
+            {
+                dadMutations[dadMutations.length] = dadMut.options[i].value;
+            }
+        }
+
         logRoll("Rolling mum accept breeding...");
-        var mumRefuse = refuses(mumRank, dadRank);
+        var mumAccept = accepts(mumRank, dadRank, mumMutations, dadMutations, "dove", "rook");
         logRoll("Rolling dad accept breeding...");
-        var dadRefuse = refuses(dadRank, mumRank);
+        var dadAccept = accepts(dadRank, mumRank, mumMutations, dadMutations, "rook", "dove");    
 
-        if(mumRefuse && dadRefuse)
+        if(mumAccept[0] == false || dadAccept[0] == false)
         {
-            return "Both kukuris refused breeding due to the partner's low rank, resulting in an empty nest.";    
+            var returnStr = "";
+            if(mumAccept[0] == false)
+            {
+                returnStr += mumAccept[1] + "<br/>";
+            }
+
+            if(dadAccept[0] == false)
+            {
+                returnStr += dadAccept[1] + "<br/>";
+            }
+
+            return returnStr;
         }
 
-        if(mumRefuse)
-        {
-             return "Due to the rook’s low rank, the dove refused to mate with them, resulting in an empty nest.";           
-        }            
-
-        if(dadRefuse)
-        {
-            return "Due to the dove's low rank, the rook refused to mate with them, resulting in an empty nest.";
-        }
-
-        var nestSize =getNestSize(mumRank, dadRank);
+        var nestSize =getNestSize(mumRank, dadRank, mumMutations, dadMutations);
         console.log("NestSize: " + nestSize);
 
         var nestStr = "";
@@ -2708,10 +3036,31 @@
 
     function populateOneDimensionSelection(sel, ar) // From a simple one-dimensional array 
     {
-        if (sel) {
+        if (sel) 
+        {
             for(var i = 0; i < ar.length; i++)
+            {
+                sel.options[i] =new Option(ar[i], i);
+            }       
+        }
+        else {
+            alert("Could not populate " + sel.name);
+        }
+    }
+
+    function populateMutations(sel)
+    {
+        if (sel) {
+
+            var counter = 0;
+
+            for(var i = 0; i < randomMutationRules.length; i++)
                 {
-                    sel.options[i] =new Option(ar[i], i);
+                    for(var j = 0; j < randomMutationRules[i][2].length; j++)
+                    {
+                        counter++;
+                        sel.options[counter] = new Option(randomMutationRules[i][2][j][0], randomMutationRules[i][2][j][0]);
+                    }                    
                 }       
             }
             else {
@@ -2745,6 +3094,9 @@
 
         populate(document.breeder.mumFeathertype, featherTypes);
         populate(document.breeder.dadFeathertype, featherTypes);
+
+        populateMutations(document.breeder.mumMutations);
+        populateMutations(document.breeder.dadMutations);
 
     };
 
