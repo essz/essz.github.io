@@ -2344,13 +2344,34 @@
 
         var skillPointsStr = "";
 
-        var inheritedMutations = getInheritedMutations(mumMutations, dadMutations);
+        var mumMutationsAr = [];
+        var dadMutationsAr = [];
+
+        var mumMut = document.getElementById("mumMutations");
+        var dadMut = document.getElementById("dadMutations");
+
+        for(var i = 0; i < mumMut.options.length; i++)
+        {
+            if(mumMut.options[i].selected)
+            {
+                mumMutationsAr[mumMutationsAr.length] = mumMut.options[i].value;
+            }
+        }
+
+        for(var i = 0; i < dadMut.options.length; i++)
+        {
+            if(dadMut.options[i].selected)
+            {
+                dadMutationsAr[dadMutationsAr.length] = dadMut.options[i].value;
+            }
+        }
+
+        var inheritedMutations = getInheritedMutations(mumMutationsAr, dadMutationsAr);
 
         for(var i = 0; i < inheritedMutations.length; i++)
         {
             console.log(inheritedMutations[i]);
         }
-
 
         var mutations = getMutations();
 
@@ -2519,8 +2540,8 @@
         var mumRank = ranks[document.getElementById("mumRank").value];
         var dadRank = ranks[document.getElementById("dadRank").value];
 
-        var mumMutations = [];
-        var dadMutations = [];
+        var mumMutationsAr = [];
+        var dadMutationsAr = [];
 
         var mumMut = document.getElementById("mumMutations");
         var dadMut = document.getElementById("dadMutations");
@@ -2529,7 +2550,7 @@
         {
             if(mumMut.options[i].selected)
             {
-                mumMutations[mumMutations.length] = mumMut.options[i].value;
+                mumMutationsAr[mumMutationsAr.length] = mumMut.options[i].value;
             }
         }
 
@@ -2537,14 +2558,14 @@
         {
             if(dadMut.options[i].selected)
             {
-                dadMutations[dadMutations.length] = dadMut.options[i].value;
+                dadMutationsAr[dadMutationsAr.length] = dadMut.options[i].value;
             }
         }
 
         logRoll("Rolling mum accept breeding...");
-        var mumAccept = accepts(mumRank, dadRank, mumMutations, dadMutations, "dove", "rook");
+        var mumAccept = accepts(mumRank, dadRank, mumMutationsAr, dadMutationsAr, "dove", "rook");
         logRoll("Rolling dad accept breeding...");
-        var dadAccept = accepts(dadRank, mumRank, dadMutations, mumMutations, "rook", "dove");    
+        var dadAccept = accepts(dadRank, mumRank, dadMutationsAr, mumMutationsAr, "rook", "dove");    
 
         if(mumAccept[0] == false || dadAccept[0] == false)
         {
@@ -2562,7 +2583,7 @@
             return returnStr;
         }
 
-        var nestSize =getNestSize(mumRank, dadRank, mumMutations, dadMutations);
+        var nestSize =getNestSize(mumRank, dadRank, mumMutationsAr, dadMutationsAr);
         console.log("NestSize: " + nestSize);
 
         var nestStr = "";
