@@ -1810,10 +1810,10 @@
         ],        
         ["Orthrus",
             [
-                ["ATK", +1],
+                ["ATK", 1],
                 ["SPD", -1]
             ]
-        ]
+        ],
     ]
 
     function getInbredMutation()
@@ -1935,6 +1935,10 @@
                         {
                             skillPointEffects[1] += randomMutationRules[i][2][j][1][k][1];
                         }
+                        else if(randomMutationRules[i][2][j][1][k][0] == "SPD")
+                        {
+                            skillPointEffects[2] += randomMutationRules[i][2][j][1][k][1];
+                        }
                         else if(randomMutationRules[i][2][j][1][k][0] == "RANDOM")
                         {
                            skillPointEffects[RollMe(0,2)] += randomMutationRules[i][2][j][1][k][1];
@@ -1948,28 +1952,31 @@
 
         for(var i = 0; i < inbredMutationRules.length; i++) // Go through each inbred mutation
         {
-            console.log("inbredMutationRules.length: " + inbredMutationRules.length);
-            console.log("inbredMutationRules[i].length: " + inbredMutationRules[i].length);
+            //console.log("inbredMutationRules.length: " + inbredMutationRules.length);
+            //console.log("inbredMutationRules[i].length: " + inbredMutationRules[i].length);
 
             if(inbredMutationRules[i][0] == mutation)
             {
-                console.log("match found");
-
                 for(var k = 0; k < inbredMutationRules[i][1].length; k++) // Go through mutation's skill points
                 {
-                    console.log("Checking if " + inbredMutationRules[i][1][k][0] + " is ATK");
-
-                    if(inbredMutationRules[i][1][k][0] == "ATK")
+                    for(var m = 0; m < inbredMutationRules[i][1][k].length; m++)
                     {
-                        skillPointEffects[0] += inbredMutationRules[i][1][k][1];
-                    }
-                    else if(inbredMutationRules[i][1][k][0] == "DEF")
-                    {
-                        skillPointEffects[1] += inbredMutationRules[i][1][k][1];
-                    }
-                    else if(inbredMutationRules[i][1][k][0] == "RANDOM")
-                    {
-                        skillPointEffects[RollMe(0,2)] += inbredMutationRules[i][1][k][1];
+                        if(inbredMutationRules[i][1][k][m] == "ATK")
+                        {
+                            skillPointEffects[0] += inbredMutationRules[i][1][k][1];
+                        }
+                        else if(inbredMutationRules[i][1][k][m] == "DEF")
+                        {
+                            skillPointEffects[1] += inbredMutationRules[i][1][k][1];
+                        }
+                        else if(inbredMutationRules[i][1][k][m] == "SPD")
+                        {
+                            skillPointEffects[2] += inbredMutationRules[i][1][k][1];
+                        }
+                        else if(inbredMutationRules[i][1][k][m] == "RANDOM")
+                        {
+                            skillPointEffects[RollMe(0,2)] += inbredMutationRules[i][1][k][1];
+                        }
                     }
                 }
 
@@ -1977,8 +1984,7 @@
             }
         }
 
-
-        console.log("returninggg");
+        console.log("returning " + skillPointEffects);
 
         return skillPointEffects;
     }
