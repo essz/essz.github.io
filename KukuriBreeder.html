@@ -1983,7 +1983,7 @@
         return skillPointEffects;
     }
 
-    function getNestSize(mumRank, dadRank, mumMut, dadMut)
+    function getNestSize(mumRank, dadRank, mumMut, dadMut, isInbred)
     {
         var nestSize = 0; 
 
@@ -1992,6 +1992,14 @@
             logRoll("At least one parent is a starter. Nest size 2 eggs.");
 
             return 2;
+        }
+
+        if(isInbred && (mumRank == "Zeta+" && dadRank == "Zeta+")) // Don't care about inbreeding if both parents are Zeta+.
+        {
+            var roll = RollMe(1,3);
+
+            logRoll("Inbred but parents are Zeta+. Nest size roll (1-3): " + roll);
+            return roll;
         }
 
         if(contains(mumMut, "Hornless") || contains(dadMut, "Hornless"))
@@ -2052,7 +2060,7 @@
 
             nestSize = roll;
         }
-        else if(mumRank == "Zeta+") // We know from conditions that dad has same or higher     
+        else if(mumRank == "Zeta+" && dadRank == "Zeta+")   
         {
            var roll = RollMe(1,3);
            logRoll("Nest size roll: " + roll);
@@ -2583,7 +2591,7 @@
             return returnStr;
         }
 
-        var nestSize =getNestSize(mumRank, dadRank, mumMutationsAr, dadMutationsAr);
+        var nestSize =getNestSize(mumRank, dadRank, mumMutationsAr, dadMutationsAr, document.getElementById('inbred').checked);
         console.log("NestSize: " + nestSize);
 
         var nestStr = "";
